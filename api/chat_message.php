@@ -231,6 +231,22 @@ function fetchRelevantProducts($conn, $userMessage) {
     if (preg_match('/(macbook|apple|asus|hp|lenovo|dell|msi|thinkpad|zenbook|ideapad|spectre|victus|pavilion)/i', $userMessage, $matches)) {
         $specificProduct = $matches[1];
     }
+
+    // Detect product category (laptop, mouse, keyboard, etc.)
+    $category = null;
+    $categories = ['laptop', 'mouse', 'keyboard', 'headset', 'monitor', 'bag', 'webcam'];
+    foreach ($categories as $cat) {
+        if (stripos($userMessage, $cat) !== false) {
+            $category = $cat;
+            break;
+        }
+    }
+    
+    // Default to 'laptop' if no specific category or product is mentioned, 
+    // as this is primarily a Laptop Advisor
+    if (!$category && !$specificProduct && stripos($userMessage, 'accessory') === false) {
+        $category = 'laptop';
+    }
     
     // Build SQL query
     $conditions = [];
@@ -256,6 +272,12 @@ function fetchRelevantProducts($conn, $userMessage) {
         // Only filter by use case if not asking about specific product
         $conditions[] = "primary_use_case = ?";
         $params[] = $useCase;
+        $types .= 's';
+    }
+
+    if ($category) {
+        $conditions[] = "product_category = ?";
+        $params[] = $category;
         $types .= 's';
     }
     
