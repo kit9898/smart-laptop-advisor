@@ -1,0 +1,399 @@
+    /* Enhanced Product Details Styles */
+    .breadcrumb {
+        padding: 15px 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .breadcrumb a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .product-detail-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .product-detail-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 50px;
+    }
+
+    .product-image-gallery {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+    }
+
+    .main-image {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+    }
+
+    .use-case-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 10px;
+    }
+
+    .product-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 10px 0 5px 0;
+        color: #1a1a1a;
+    }
+
+    .brand-tag-large {
+        font-size: 1.1rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .price-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+
+    .price-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .product-price-display {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 5px 0;
+    }
+
+    .key-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .feature-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .feature-box strong {
+        display: block;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .feature-box span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .performance-meter {
+        margin: 25px 0;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .meter-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .meter-bar {
+        height: 12px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .meter-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+        border-radius: 10px;
+        transition: width 1s ease;
+    }
+
+    .spec-tabs {
+        display: flex;
+        gap: 10px;
+        border-bottom: 2px solid #e9ecef;
+        margin: 30px 0 20px 0;
+    }
+
+    .spec-tab {
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .spec-tab.active {
+        color: #3b82f6;
+        border-bottom-color: #3b82f6;
+    }
+
+    .spec-tab:hover {
+        color: #3b82f6;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 20px 0;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .spec-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .spec-table tr {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .spec-table td {
+        padding: 15px 10px;
+    }
+
+    .spec-table td:first-child {
+        font-weight: 600;
+        color: #666;
+        width: 35%;
+    }
+
+    .spec-table td:last-child {
+        color: #1a1a1a;
+    }
+
+    .cart-section {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-top: 20px;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #e9ecef;
+        background: white;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .quantity-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+
+    .quantity-display {
+        font-size: 1.3rem;
+        font-weight: 600;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .quick-action-btn {
+        flex: 1;
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+        text-decoration: none;
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .quick-action-btn:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    .similar-products-section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 2px solid #e9ecef;
+    }
+
+    .similar-products-section h3 {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        color: #1a1a1a;
+    }
+
+    .similar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .trust-badges {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .key-features {
+            grid-template-columns: 1fr;
+        }
+
+        .spec-tabs {
+            overflow-x: auto;
+        }
+    }
+
+    /* Stock Status Badges */
+    .stock-indicator {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .stock-in {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .stock-low {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    .stock-out {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    /* Review Styling */
+    .star-rating {
+        color: #f59e0b;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+    }
+
+    .review-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .review-date {
+        color: #888;
+        font-size: 0.85rem;
+    }
+
+    .user-name {
+        font-weight: bold;
+        color: #333;
+    }

@@ -1,0 +1,1106 @@
+<?php
+require_once 'includes/auth_check.php';
+include 'includes/header.php';
+
+// Determine the view: Browse all or get recommendations
+$view = $_GET['view'] ?? 'browse';
+
+// --- BROWSE/FILTER LOGIC ---
+if ($view == 'browse') {
+    $search_term = trim($_GET['search'] ?? '');
+    $brand_filter = trim($_GET['brand'] ?? '');
+    $use_case_filter = trim($_GET['use_case'] ?? '');
+    $min_price_filter = trim($_GET['min_price'] ?? '');
+    $max_price_filter = trim($_GET['max_price'] ?? '');
+    $min_ram_filter = trim($_GET['min_ram'] ?? '');
+    $sort_filter = trim($_GET['sort'] ?? 'price_asc');
+    
+    $sql = "SELECT * FROM products";
+    $where_clauses = []; 
+    $params = []; 
+    $types = '';
+    
+    if (!empty($search_term)) { 
+        $where_clauses[] = "(product_name LIKE ? OR brand LIKE ? OR cpu LIKE ? OR gpu LIKE ?)"; 
+        $like_term = "%".$search_term."%"; 
+        $params = array_merge($params, [$like_term, $like_term, $like_term, $like_term]); 
+        $types .= 'ssss'; 
+    }
+    if (!empty($brand_filter)) { 
+        $where_clauses[] = "brand = ?"; 
+        $params[] = $brand_filter; 
+        $types .= 's'; 
+    }
+    if (!empty($use_case_filter)) { 
+        $where_clauses[] = "primary_use_case = ?"; 
+        $params[] = $use_case_filter; 
+        $types .= 's'; 
+    }
+    if (is_numeric($min_price_filter)) { 
+        $where_clauses[] = "price >= ?"; 
+        $params[] = $min_price_filter; 
+        $types .= 'd'; 
+    }
+    if (is_numeric($max_price_filter)) { 
+        $where_clauses[] = "price <= ?"; 
+        $params[] = $max_price_filter; 
+        $types .= 'd'; 
+    }
+    if (is_numeric($min_ram_filter)) { 
+        $where_clauses[] = "ram_gb >= ?"; 
+        $params[] = $min_ram_filter; 
+        $types .= 'i'; 
+    }
+    
+    if (!empty($where_clauses)) { 
+        $sql .= " WHERE " . implode(" AND ", $where_clauses); 
+    }
+    
+    $order_by = " ORDER BY price ASC";
+    switch ($sort_filter) { 
+        case 'price_desc': $order_by = " ORDER BY price DESC"; break; 
+        case 'name_asc': $order_by = " ORDER BY product_name ASC"; break; 
+        case 'name_desc': $order_by = " ORDER BY product_name DESC"; break;
+        case 'ram_desc': $order_by = " ORDER BY ram_gb DESC"; break;
+        case 'newest': $order_by = " ORDER BY product_id DESC"; break;
+    }
+    $sql .= $order_by;
+    
+    $stmt = $conn->prepare($sql);
+    if (!empty($params)) { 
+        $stmt->bind_param($types, ...$params); 
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // Count total results
+    $total_results = $result->num_rows;
+}
+
+// --- RECOMMENDATION LOGIC ---
+if ($view == 'recommendations') {
+    $user_id = $_SESSION['user_id'];
+    $user_stmt = $conn->prepare("SELECT primary_use_case FROM users WHERE user_id = ?");
+    $user_stmt->bind_param("i", $user_id);
+    $user_stmt->execute();
+    $user_pref = $user_stmt->get_result()->fetch_assoc()['primary_use_case'] ?? 'General Use';
+    $user_stmt->close();
+    
+    // Enhanced recommendation with scoring
+    $sql = "SELECT p.*, 
+            COALESCE(r.rating, 0) as user_rating,
+            (CASE 
+                WHEN r.rating = 1 THEN 100
+                WHEN r.rating IS NULL THEN 50
+                ELSE 0
+            END) as recommendation_score
+            FROM products p 
+            LEFT JOIN recommendation_ratings r ON p.product_id = r.product_id AND r.user_id = ?
+            WHERE p.primary_use_case = ? AND (r.rating IS NULL OR r.rating != -1)
+            ORDER BY recommendation_score DESC, p.price DESC 
+            LIMIT 12";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("is", $user_id, $user_pref);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $total_results = $result->num_rows;
+}
+
+// Get filter options
+$brands_query = $conn->query("SELECT DISTINCT brand FROM products ORDER BY brand ASC");
+$use_cases_query = $conn->query("SELECT DISTINCT primary_use_case FROM products ORDER BY primary_use_case ASC");
+?>
+
+<style>
+/* Enhanced Products Page Styles */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 20px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5rem;
+}
+
+.page-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.tab {
+    padding: 15px 30px;
+    background: none;
+    border: none;
+    color: #666;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.tab:hover {
+    color: #3b82f6;
+}
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.results-info {
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.results-info strong {
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+.view-options {
+    display: flex;
+    gap: 10px;
+}
+
+.view-btn {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.view-btn:hover,
+.view-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.product-grid.list-view {
+    grid-template-columns: 1fr;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.product-card.list-view {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.product-card.list-view img {
+    height: 180px;
+    border-radius: 8px;
+}
+
+.product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.quick-view-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.product-card:hover .quick-view-badge {
+    opacity: 1;
+}
+
+.product-card-info {
+    padding: 20px;
+}
+
+.product-card.list-view .product-card-info {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand {
+    color: #666;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.product-card h3 {
+    font-size: 1.1rem;
+    margin: 8px 0;
+    color: #1a1a1a;
+    line-height: 1.4;
+}
+
+.product-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.spec-tag {
+    padding: 4px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.product-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-top: 10px;
+}
+
+.product-actions {
+    padding: 0 20px 20px 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.product-card.list-view .product-actions {
+    padding: 0;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.quick-add-btn {
+    flex: 1;
+    padding: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.quick-add-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.compare-section {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.compare-checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compare-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.sticky-compare-bar {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: none;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+    animation: slideUp 0.3s;
+}
+
+.sticky-compare-bar.show {
+    display: flex;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.compare-count {
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.recommendation-card {
+    position: relative;
+}
+
+.recommendation-reason {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.rating-form {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.rating-btn {
+    padding: 8px 20px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.2rem;
+}
+
+.rating-btn:hover {
+    transform: scale(1.1);
+}
+
+.rating-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    transform: scale(1.15);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #1a1a1a;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-toggle {
+        display: block;
+    }
+    
+    .filter-section.collapsed .filter-grid,
+    .filter-section.collapsed .filter-actions {
+        display: none;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    
+    .product-card.list-view {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+
+<?php if ($view == 'browse'): ?>
+    <div class="page-header">
+        <h1>Explore Our Collection</h1>
+        <p>Find the perfect laptop from our curated selection</p>
+    </div>
+<?php else: ?>
+    <div class="page-header">
+        <h1>✨ Personalized For You</h1>
+        <p>Handpicked recommendations based on your interests in <strong><?php echo htmlspecialchars($user_pref); ?></strong></p>
+    </div>
+<?php endif; ?>
+
+<!-- Tab Navigation -->
+<div class="tabs">
+    <a href="?view=browse" class="tab <?php if ($view == 'browse') echo 'active'; ?>">
+        🔍 Browse All Products
+    </a>
+    <a href="?view=recommendations" class="tab <?php if ($view == 'recommendations') echo 'active'; ?>">
+        ✨ For You
+    </a>
+</div>
+
+<?php if ($view == 'browse'): ?>
+    <!-- Advanced Filter Section -->
+    <button class="btn filter-toggle" onclick="toggleFilters()">
+        🎚️ Filters
+    </button>
+    
+    <div class="filter-section" id="filterSection">
+        <form action="products.php" method="get" id="filterForm">
+            <input type="hidden" name="view" value="browse">
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="search">🔎 Search</label>
+                    <input type="text" id="search" name="search" 
+                           placeholder="Search products..." 
+                           value="<?php echo htmlspecialchars($search_term); ?>">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="brand">🏷️ Brand</label>
+                    <select id="brand" name="brand">
+                        <option value="">All Brands</option>
+                        <?php while ($brand_row = $brands_query->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($brand_row['brand']); ?>"
+                                    <?php if ($brand_filter == $brand_row['brand']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($brand_row['brand']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="use_case">💼 Use Case</label>
+                    <select id="use_case" name="use_case">
+                        <option value="">All Use Cases</option>
+                        <?php while ($case_row = $use_cases_query->fetch_assoc()): ?>
+                            <option value="<?php echo htmlspecialchars($case_row['primary_use_case']); ?>"
+                                    <?php if ($use_case_filter == $case_row['primary_use_case']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($case_row['primary_use_case']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="min_ram">💾 Minimum RAM</label>
+                    <select id="min_ram" name="min_ram">
+                        <option value="">Any</option>
+                        <option value="4" <?php if ($min_ram_filter == '4') echo 'selected'; ?>>4 GB+</option>
+                        <option value="8" <?php if ($min_ram_filter == '8') echo 'selected'; ?>>8 GB+</option>
+                        <option value="16" <?php if ($min_ram_filter == '16') echo 'selected'; ?>>16 GB+</option>
+                        <option value="32" <?php if ($min_ram_filter == '32') echo 'selected'; ?>>32 GB+</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>💰 Price Range</label>
+                    <div class="price-range-inputs">
+                        <input type="number" name="min_price" placeholder="Min $" 
+                               value="<?php echo htmlspecialchars($min_price_filter); ?>" min="0">
+                        <input type="number" name="max_price" placeholder="Max $" 
+                               value="<?php echo htmlspecialchars($max_price_filter); ?>" min="0">
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="sort">📊 Sort By</label>
+                    <select id="sort" name="sort">
+                        <option value="price_asc" <?php if($sort_filter == 'price_asc') echo 'selected'; ?>>
+                            Price: Low to High
+                        </option>
+                        <option value="price_desc" <?php if($sort_filter == 'price_desc') echo 'selected'; ?>>
+                            Price: High to Low
+                        </option>
+                        <option value="name_asc" <?php if($sort_filter == 'name_asc') echo 'selected'; ?>>
+                            Name: A-Z
+                        </option>
+                        <option value="ram_desc" <?php if($sort_filter == 'ram_desc') echo 'selected'; ?>>
+                            RAM: High to Low
+                        </option>
+                        <option value="newest" <?php if($sort_filter == 'newest') echo 'selected'; ?>>
+                            Newest First
+                        </option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    ✓ Apply Filters
+                </button>
+                <a href="products.php?view=browse" class="btn" style="background-color:#6c757d;">
+                    ↺ Reset
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Results Header -->
+    <div class="results-header">
+        <div class="results-info">
+            Showing <strong><?php echo $total_results; ?></strong> 
+            <?php echo $total_results == 1 ? 'product' : 'products'; ?>
+        </div>
+        <div class="view-options">
+            <button class="view-btn active" onclick="setView('grid')" id="gridBtn">
+                ⊞ Grid
+            </button>
+            <button class="view-btn" onclick="setView('list')" id="listBtn">
+                ☰ List
+            </button>
+        </div>
+    </div>
+    
+    <!-- Products Grid -->
+    <?php if ($total_results > 0): ?>
+        <div class="product-grid" id="productGrid">
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <div class="product-card">
+                    <span class="quick-view-badge">👁️ Quick View</span>
+                    <?php if ($row['primary_use_case'] == 'Gaming'): ?>
+                        <span class="product-badge">🎮 Gaming</span>
+                    <?php elseif ($row['ram_gb'] >= 32): ?>
+                        <span class="product-badge">⚡ High Performance</span>
+                    <?php endif; ?>
+                    
+                    <a href="product_details.php?product_id=<?php echo $row['product_id']; ?>">
+                        <img src="<?php echo !empty($row['image_url']) ? htmlspecialchars($row['image_url']) : 'https://via.placeholder.com/280'; ?>" 
+                             alt="<?php echo htmlspecialchars($row['product_name']); ?>">
+                        <div class="product-card-info">
+                            <p class="brand"><?php echo htmlspecialchars($row['brand']); ?></p>
+                            <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+                            
+                            <div class="product-specs">
+                                <span class="spec-tag">💾 <?php echo $row['ram_gb']; ?>GB</span>
+                                <span class="spec-tag">💿 <?php echo $row['storage_gb']; ?>GB</span>
+                                <span class="spec-tag">📺 <?php echo $row['display_size']; ?>"</span>
+                            </div>
+                            
+                            <p class="product-price">$<?php echo number_format($row['price'], 2); ?></p>
+                        </div>
+                    </a>
+                    
+                    <div class="product-actions">
+                        <button class="quick-add-btn" onclick="quickAddToCart(<?php echo $row['product_id']; ?>)">
+                            🛒 Add to Cart
+                        </button>
+                    </div>
+                    
+                    <div class="compare-section">
+                        <div class="compare-checkbox-container">
+                            <input type="checkbox" class="compare-checkbox" 
+                                   data-id="<?php echo $row['product_id']; ?>" 
+                                   id="compare-<?php echo $row['product_id']; ?>"
+                                   onchange="updateCompareBar()">
+                            <label for="compare-<?php echo $row['product_id']; ?>">
+                                ⚖️ Add to Compare
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    <?php else: ?>
+        <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No Products Found</h3>
+            <p>We couldn't find any products matching your criteria.</p>
+            <a href="products.php?view=browse" class="btn btn-primary">Clear Filters</a>
+        </div>
+    <?php endif; ?>
+    
+    <!-- Sticky Compare Bar -->
+    <div class="sticky-compare-bar" id="compareBar">
+        <span class="compare-count" id="compareCount">0 Selected</span>
+        <button class="btn btn-primary" onclick="goToCompare()" id="compareNowBtn">
+            Compare Now
+        </button>
+        <button class="btn" style="background-color:#6c757d;" onclick="clearCompare()">
+            Clear
+        </button>
+    </div>
+    
+<?php elseif ($view == 'recommendations'): ?>
+    <!-- Recommendations View -->
+    <?php if ($total_results > 0): ?>
+        <div class="results-info" style="margin-bottom: 25px; text-align: center;">
+            We found <strong><?php echo $total_results; ?></strong> personalized recommendations for you
+        </div>
+        
+        <div class="product-grid">
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <div class="product-card recommendation-card">
+                    <span class="recommendation-reason">
+                        ✨ Recommended for <?php echo htmlspecialchars($user_pref); ?>
+                    </span>
+                    
+                    <a href="product_details.php?product_id=<?php echo $row['product_id']; ?>">
+                        <img src="<?php echo !empty($row['image_url']) ? htmlspecialchars($row['image_url']) : 'https://via.placeholder.com/280'; ?>" 
+                             alt="<?php echo htmlspecialchars($row['product_name']); ?>">
+                        <div class="product-card-info">
+                            <p class="brand"><?php echo htmlspecialchars($row['brand']); ?></p>
+                            <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+                            
+                            <div class="product-specs">
+                                <span class="spec-tag">💾 <?php echo $row['ram_gb']; ?>GB</span>
+                                <span class="spec-tag">💿 <?php echo $row['storage_gb']; ?>GB</span>
+                                <span class="spec-tag">📺 <?php echo $row['display_size']; ?>"</span>
+                            </div>
+                            
+                            <p class="product-price">$<?php echo number_format($row['price'], 2); ?></p>
+                        </div>
+                    </a>
+                    
+                    <div class="rating-form">
+                        <form action="rate_recommendation.php" method="post" style="display: contents;">
+                            <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>">
+                            <button type="submit" name="rating" value="1" 
+                                    class="rating-btn <?php if(isset($row['user_rating']) && $row['user_rating'] == 1) echo 'active'; ?>"
+                                    title="I like this">
+                                👍
+                            </button>
+                            <button type="submit" name="rating" value="-1" 
+                                    class="rating-btn <?php if(isset($row['user_rating']) && $row['user_rating'] == -1) echo 'active'; ?>"
+                                    title="Not interested">
+                                👎
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    <?php else: ?>
+        <div class="empty-state">
+            <div class="empty-state-icon">✨</div>
+            <h3>No Recommendations Yet</h3>
+            <p>We need to know your interests better. Please set your primary use case in your profile.</p>
+            <a href="edit_profile.php" class="btn btn-primary">Update Profile</a>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if (isset($stmt)) $stmt->close(); ?>
+
+<script>
+// View switcher (Grid/List)
+let currentView = 'grid';
+
+function setView(view) {
+    const grid = document.getElementById('productGrid');
+    const gridBtn = document.getElementById('gridBtn');
+    const listBtn = document.getElementById('listBtn');
+    
+    if (!grid) return;
+    
+    currentView = view;
+    
+    if (view === 'list') {
+        grid.classList.add('list-view');
+        grid.querySelectorAll('.product-card').forEach(card => {
+            card.classList.add('list-view');
+        });
+        listBtn.classList.add('active');
+        gridBtn.classList.remove('active');
+    } else {
+        grid.classList.remove('list-view');
+        grid.querySelectorAll('.product-card').forEach(card => {
+            card.classList.remove('list-view');
+        });
+        gridBtn.classList.add('active');
+        listBtn.classList.remove('active');
+    }
+    
+    // Save preference
+    localStorage.setItem('productView', view);
+}
+
+// Restore view preference
+window.addEventListener('load', function() {
+    const savedView = localStorage.getItem('productView');
+    if (savedView && savedView === 'list') {
+        setView('list');
+    }
+});
+
+// Filter toggle for mobile
+function toggleFilters() {
+    const filterSection = document.getElementById('filterSection');
+    filterSection.classList.toggle('collapsed');
+}
+
+// Compare functionality
+let selectedProducts = new Set();
+
+function updateCompareBar() {
+    const checkboxes = document.querySelectorAll('.compare-checkbox:checked');
+    selectedProducts.clear();
+    
+    checkboxes.forEach(cb => {
+        selectedProducts.add(cb.dataset.id);
+    });
+    
+    const compareBar = document.getElementById('compareBar');
+    const compareCount = document.getElementById('compareCount');
+    const compareBtn = document.getElementById('compareNowBtn');
+    
+    if (selectedProducts.size > 0) {
+        compareBar.classList.add('show');
+        compareCount.textContent = `${selectedProducts.size} Selected`;
+        
+        if (selectedProducts.size < 2) {
+            compareBtn.disabled = true;
+            compareBtn.style.opacity = '0.5';
+            compareBtn.textContent = 'Select 2+ to Compare';
+        } else if (selectedProducts.size > 4) {
+            compareBtn.disabled = true;
+            compareBtn.style.opacity = '0.5';
+            compareBtn.textContent = 'Max 4 Products';
+        } else {
+            compareBtn.disabled = false;
+            compareBtn.style.opacity = '1';
+            compareBtn.textContent = `Compare ${selectedProducts.size} Products`;
+        }
+    } else {
+        compareBar.classList.remove('show');
+    }
+}
+
+function goToCompare() {
+    if (selectedProducts.size >= 2 && selectedProducts.size <= 4) {
+        const ids = Array.from(selectedProducts).join(',');
+        window.location.href = `compare.php?ids=${ids}`;
+    } else {
+        alert('Please select 2 to 4 products to compare.');
+    }
+}
+
+function clearCompare() {
+    selectedProducts.clear();
+    document.querySelectorAll('.compare-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    updateCompareBar();
+}
+
+// Quick add to cart
+function quickAddToCart(productId) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'cart_process.php';
+    
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'add';
+    
+    const productInput = document.createElement('input');
+    productInput.type = 'hidden';
+    productInput.name = 'product_id';
+    productInput.value = productId;
+    
+    const quantityInput = document.createElement('input');
+    quantityInput.type = 'hidden';
+    quantityInput.name = 'quantity';
+    quantityInput.value = '1';
+    
+    form.appendChild(actionInput);
+    form.appendChild(productInput);
+    form.appendChild(quantityInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Auto-submit filters on change (optional enhancement)
+const filterSelects = document.querySelectorAll('#filterForm select');
+filterSelects.forEach(select => {
+    select.addEventListener('change', function() {
+        // Optional: Auto-submit on select change
+        // document.getElementById('filterForm').submit();
+    });
+});
+
+// Search with debounce
+let searchTimeout;
+const searchInput = document.getElementById('search');
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        // Optional: Auto-search after typing stops
+        // searchTimeout = setTimeout(() => {
+        //     document.getElementById('filterForm').submit();
+        // }, 500);
+    });
+}
+
+// Smooth scroll to top when changing pages
+if (window.location.search) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Product card hover effects
+document.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
+
+// Lazy loading for images (performance optimization)
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src || img.src;
+                img.classList.add('loaded');
+                observer.unobserve(img);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.product-card img').forEach(img => {
+        imageObserver.observe(img);
+    });
+}
+
+// Rating button animation
+document.querySelectorAll('.rating-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        this.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 200);
+    });
+});
+
+// Active filters indicator
+function showActiveFilters() {
+    const params = new URLSearchParams(window.location.search);
+    let activeCount = 0;
+    
+    ['search', 'brand', 'use_case', 'min_price', 'max_price', 'min_ram'].forEach(param => {
+        if (params.get(param)) activeCount++;
+    });
+    
+    if (activeCount > 0) {
+        const filterToggle = document.querySelector('.filter-toggle');
+        if (filterToggle) {
+            filterToggle.innerHTML = `🎚️ Filters (${activeCount} active)`;
+            filterToggle.style.background = '#3b82f6';
+            filterToggle.style.color = 'white';
+        }
+    }
+}
+
+showActiveFilters();
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + K to focus search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('search');
+        if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+    
+    // Escape to clear search
+    if (e.key === 'Escape') {
+        const searchInput = document.getElementById('search');
+        if (searchInput && document.activeElement === searchInput) {
+            searchInput.value = '';
+        }
+    }
+});
+
+// Show tooltip on first visit
+if (!localStorage.getItem('compareTooltipShown')) {
+    setTimeout(() => {
+        const firstCheckbox = document.querySelector('.compare-checkbox');
+        if (firstCheckbox) {
+            // Could add a tooltip here
+            localStorage.setItem('compareTooltipShown', 'true');
+        }
+    }, 2000);
+}
+
+// Performance monitoring (optional - for FYP demonstration)
+if (window.performance && window.performance.timing) {
+    window.addEventListener('load', function() {
+        const timing = window.performance.timing;
+        const loadTime = timing.loadEventEnd - timing.navigationStart;
+        console.log(`Page loaded in ${loadTime}ms`);
+    });
+}
+
+// Add to favorites (future feature placeholder)
+function addToFavorites(productId) {
+    // This could be implemented with AJAX to save favorites
+    console.log('Adding to favorites:', productId);
+    alert('Favorites feature coming soon!');
+}
+
+// Filter presets (quick filters)
+function applyPreset(preset) {
+    const form = document.getElementById('filterForm');
+    if (!form) return;
+    
+    // Clear existing filters
+    form.querySelectorAll('input, select').forEach(input => {
+        if (input.name !== 'view' && input.type !== 'submit') {
+            input.value = '';
+        }
+    });
+    
+    switch(preset) {
+        case 'budget':
+            form.querySelector('[name="max_price"]').value = '1000';
+            form.querySelector('[name="sort"]').value = 'price_asc';
+            break;
+        case 'gaming':
+            form.querySelector('[name="use_case"]').value = 'Gaming';
+            form.querySelector('[name="min_ram"]').value = '16';
+            break;
+        case 'professional':
+            form.querySelector('[name="use_case"]').value = 'Business';
+            form.querySelector('[name="min_ram"]').value = '16';
+            break;
+        case 'student':
+            form.querySelector('[name="use_case"]').value = 'Student';
+            form.querySelector('[name="max_price"]').value = '1500';
+            break;
+    }
+    
+    form.submit();
+}
+
+// Export comparison data (advanced feature)
+function exportComparison() {
+    const selectedIds = Array.from(selectedProducts);
+    if (selectedIds.length < 2) {
+        alert('Please select at least 2 products to export comparison.');
+        return;
+    }
+    
+    // This would generate a comparison report
+    console.log('Exporting comparison for:', selectedIds);
+}
+
+// Price alert (future feature)
+function setPriceAlert(productId, productName) {
+    const targetPrice = prompt(`Set price alert for ${productName}.\nNotify me when price drops below ($):`);
+    if (targetPrice && !isNaN(targetPrice)) {
+        // Would save to database via AJAX
+        alert(`Price alert set! We'll notify you when the price drops below $${targetPrice}`);
+    }
+}
+
+// Share product
+function shareProduct(productId, productName) {
+    if (navigator.share) {
+        navigator.share({
+            title: productName,
+            text: `Check out this laptop: ${productName}`,
+            url: `${window.location.origin}/product_details.php?product_id=${productId}`
+        });
+    } else {
+        // Fallback: Copy to clipboard
+        const url = `${window.location.origin}/product_details.php?product_id=${productId}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Product link copied to clipboard!');
+        });
+    }
+}
+</script>
+
+<?php include 'includes/footer.php'; ?>

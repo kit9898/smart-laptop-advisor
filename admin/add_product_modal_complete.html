@@ -1,0 +1,110 @@
+<!-- COMPLETE ADD PRODUCT MODAL - Lines 455-508 Replacement -->
+<!-- Copy this entire section to replace lines 455-508 in admin_products.php -->
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" id="addProductForm">
+                    <input type="hidden" name="add_product" value="1">
+                    
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="productName">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="productName" name="product_name" placeholder="e.g., Dell XPS 15" required>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productBrand">Brand <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="productBrand" name="brand" placeholder="e.g., Dell, HP, Apple, Lenovo" required>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productCategory">Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="productCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Gaming">Gaming</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Creative">Creative</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="price">Price ($) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="price" name="price" placeholder="1299.99" step="0.01" min="0" required>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productCpu">CPU / Processor</label>
+                                <input type="text" class="form-control" id="productCpu" name="cpu" placeholder="e.g., Intel Core i7-13700H">
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productGpu">GPU / Graphics Card</label>
+                                <input type="text" class="form-control" id="productGpu" name="gpu" placeholder="e.g., NVIDIA RTX 4060">
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="productRam">RAM (GB)</label>
+                                <input type="number" class="form-control" id="productRam" name="ram" placeholder="16" min="1" max="128">
+                                <small class="text-muted">Enter RAM capacity in gigabytes</small>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productStorage">Storage Capacity (GB)</label>
+                                <input type="number" class="form-control" id="productStorage" name="storage" placeholder="512" min="1" max="8192">
+                                <small class="text-muted">Enter storage size in gigabytes</small>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productStorageType">Storage Type</label>
+                                <select class="form-select" id="productStorageType" name="storage_type">
+                                    <option value="SSD" selected>SSD (Solid State Drive)</option>
+                                    <option value="HDD">HDD (Hard Disk Drive)</option>
+                                    <option value="Hybrid">Hybrid (SSD + HDD)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="productDisplay">Display Size (inches)</label>
+                                <input type="number" class="form-control" id="productDisplay" name="display" placeholder="15.6" step="0.1" min="10" max="20">
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="image">Product Image</label>
+                                <input type="file" class="form-control" id="image" name="product_image" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                <small class="text-muted">Accepted formats: JPG, PNG, WEBP (Max 5MB)</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Full Width Description -->
+                        <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label for="productDescription">Product Description</label>
+                                <textarea class="form-control" id="productDescription" name="description" rows="3" placeholder="Enter detailed product information, features, and specifications..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addProductForm" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>Save Product
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

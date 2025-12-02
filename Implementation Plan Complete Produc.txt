@@ -1,0 +1,233 @@
+Implementation Plan: Complete Product Management System
+Overview
+The goal is to complete the 
+admin_products.php
+ file to provide full CRUD (Create, Read, Update, Delete) functionality for product management, with proper database connectivity and dynamic integration with client-side pages.
+
+Based on the analysis, the client-side pages are already fully functional and dynamically connected to the database. The main work is to complete missing features in the admin panel.
+
+User Review Required
+IMPORTANT
+
+Current State:
+
+products.php
+ and 
+product_details.php
+ are already fully functional
+They dynamically fetch products from database
+They support categories, filtering, reviews, and ML recommendations
+The database schema is complete with products, product_media, and product_reviews tables
+What Needs Completion:
+
+Admin page Edit Product feature (currently shows alert only)
+Admin page View Product Details (currently shows alert only)
+Admin page Duplicate Product (currently shows alert only)
+Admin page Brand/Category filtering (dropdowns exist but not functional)
+Complete CSV upload JavaScript (backend exists, frontend incomplete)
+WARNING
+
+Assumptions Made:
+
+Using existing database connection at 
+admin/includes/db_connect.php
+Images are stored in LaptopAdvisor/images/ directory
+Using Bootstrap 5 modals for edit/view functionality
+DataTables library is already initialized for the products table
+Proposed Changes
+Admin Panel Enhancements
+[MODIFY] 
+admin_products.php
+1. Edit Product Functionality (Lines 780-785)
+
+Add server-side handling for product updates:
+
+Add new PHP block to handle $_POST['edit_product']
+Fetch existing product data
+Update database record
+Handle image replacement (optional)
+Preserve existing image if no new one uploaded
+Add JavaScript function to load product data into edit modal:
+
+Create new modal editProductModal (similar to add modal)
+Pre-fill form fields with existing product data
+Submit updated data via POST
+Show success/error messages
+2. View Product Details Functionality (Lines 775-779)
+
+Add server-side data retrieval for viewing:
+
+Fetch product details by ID
+Fetch associated media from product_media table
+Fetch reviews from product_reviews table
+Add JavaScript function and modal:
+
+Create viewProductModal to display product details
+Show product specifications, images, and reviews
+Read-only display with "Edit" button to switch to edit mode
+3. Duplicate Product Functionality (Lines 787-793)
+
+Add server-side duplication logic:
+
+Handle $_POST['duplicate_product']
+Clone product record with new ID
+Optionally copy image file with new name
+Append "(Copy)" to product name
+Add JavaScript confirmation:
+
+Show confirmation dialog
+Submit duplicate request via form POST
+Reload page to show new product
+4. Implement Brand & Category Filtering (Lines 417-444)
+
+Update existing filter dropdowns to be functional:
+
+Modify SQL query to accept $_GET['filter_brand'] and $_GET['filter_category']
+Add WHERE clauses dynamically based on filters
+Update dropdown links to use href=\"?filter_brand=Apple\" format instead of onclick=\"event.preventDefault()\"
+Preserve filters when navigating table pages
+5. Complete CSV Upload JavaScript (Lines 802-815)
+
+Replace placeholder alert with actual implementation:
+
+Create FormData with CSV file
+Use fetch() API to POST to current page
+Show upload progress (optional)
+Display success message with count of imported products
+Refresh DataTable to show new products
+The backend processing already exists (lines 42-88)
+Verification Plan
+Automated Tests
+Since this is a PHP/MySQL web application without existing unit tests, we'll use manual browser testing combined with database verification.
+
+Manual Verification
+1. Test Add Product (Already Working)
+Navigate to http://localhost/fyp/admin/admin_products.php
+Click "Add New Product" button
+Fill in all required fields (Name, Brand, Category, Price)
+Upload a test image (JPG, PNG, or WEBP, under 5MB)
+Click "Save Product"
+Verify: Product appears in the table
+Verify: Image is saved in LaptopAdvisor/images/
+Verify: Database record exists: SELECT * FROM products ORDER BY product_id DESC LIMIT 1
+2. Test Edit Product (New Feature)
+Click the three-dot menu on any product
+Click "Edit"
+Verify: Modal opens with pre-filled data
+Change product name and price
+Optionally upload a new image
+Click "Save Changes"
+Verify: Product updates in table
+Verify: Database record updated: SELECT * FROM products WHERE product_id = X
+Verify: Old image deleted if new one uploaded
+3. Test View Product Details (New Feature)
+Click the three-dot menu on any product
+Click "View Details"
+Verify: Modal shows all product information
+Verify: If product has media in product_media table, images/videos display
+Verify: If product has reviews, they are displayed
+Click "Close" to dismiss modal
+4. Test Duplicate Product (New Feature)
+Click the three-dot menu on any product
+Click "Duplicate"
+Verify: Confirmation dialog appears
+Click "OK"
+Verify: New product appears in table with "(Copy)" suffix
+Verify: Image is copied to new file
+Verify: Database has new record: SELECT * FROM products WHERE product_name LIKE '%Copy%' ORDER BY product_id DESC LIMIT 1
+5. Test Delete Product (Already Working)
+Click the three-dot menu on any product
+Click "Delete"
+Confirm deletion
+Verify: Product removed from table
+Verify: Image file deleted from LaptopAdvisor/images/
+Verify: Database record deleted: SELECT * FROM products WHERE product_id = X (should return 0 rows)
+6. Test Brand Filter (New Feature)
+Click "Brand" dropdown
+Select "Apple" (or any brand)
+Verify: URL updates to ?filter_brand=Apple
+Verify: Table shows only Apple products
+Verify: SQL query: SELECT * FROM products WHERE brand = 'Apple'
+Click "All Brands" to reset filter
+7. Test Category Filter (New Feature)
+Click "Category" dropdown
+Select "Gaming" (or any category)
+Verify: URL updates to ?filter_category=Gaming
+Verify: Table shows only gaming products
+Verify: SQL query: SELECT * FROM products WHERE primary_use_case = 'Gaming'
+Click "All Categories" to reset filter
+8. Test CSV Bulk Upload (Complete Feature)
+Click "Bulk Upload (CSV)" button
+Select a CSV file with sample products (format: Name, Brand, Price, Stock, Category, CPU, GPU, RAM_GB, Storage_GB, Storage_Type, Display, Battery, Weight, OS, Description)
+Click "Upload Products"
+Verify: Success message shows "X products imported successfully!"
+Verify: New products appear in table
+Verify: Database has new records: SELECT * FROM products ORDER BY product_id DESC LIMIT 10
+9. Test CSV Export (Already Working)
+Click "Export CSV" button
+Verify: CSV file downloads with name products_YYYY-MM-DD.csv
+Verify: CSV contains all products with correct columns
+Verify: Data matches database
+10. Test Client-Side Integration (Already Working)
+Navigate to http://localhost/fyp/LaptopAdvisor/products.php
+Verify: All products display correctly
+Verify: Category filter works (select "laptop", "mouse", etc.)
+Verify: Brand filter works
+Click on any product to go to details page
+Verify: product_details.php shows correct product information
+Verify: If product is a laptop, accessory recommendations appear
+Verify: Add to cart works
+Verify: Review submission works
+Database Schema Reference
+Products Table
+CREATE TABLE `products` (
+  `product_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_name` varchar(255) NOT NULL,
+  `product_category` enum('laptop','mouse','keyboard','headset','monitor','bag','mousepad','webcam','other') DEFAULT 'laptop',
+  `related_to_category` varchar(100) DEFAULT NULL,
+  `brand` varchar(100) DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `stock_quantity` int(11) NOT NULL DEFAULT 50,
+  `cpu` varchar(100) DEFAULT NULL,
+  `gpu` varchar(100) DEFAULT NULL,
+  `ram_gb` int(11) DEFAULT NULL,
+  `storage_gb` int(11) DEFAULT NULL,
+  `storage_type` varchar(50) DEFAULT 'SSD',
+  `display_size` decimal(4,2) DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `primary_use_case` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`product_id`)
+)
+Product Media Table
+CREATE TABLE `product_media` (
+  `media_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NOT NULL,
+  `media_url` varchar(500) NOT NULL,
+  `media_type` enum('image','video') DEFAULT 'image',
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`media_id`)
+)
+Product Reviews Table
+CREATE TABLE `product_reviews` (
+  `review_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `rating` tinyint(1) NOT NULL,
+  `review_text` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`review_id`)
+)
+Implementation Notes
+Image Handling: When editing a product, if a new image is uploaded, delete the old image file from LaptopAdvisor/images/ before saving the new one.
+
+Error Handling: All database operations should use prepared statements to prevent SQL injection. Error messages should be user-friendly and logged to error log.
+
+Session Security: Ensure admin authentication is checked on all pages (already exists via includes/admin_header.php).
+
+DataTables Integration: After any CRUD operation, either reload the page or use DataTables API to refresh the table without full reload.
+
+Responsive Design: All modals should be responsive and work on mobile devices.
+
+Validation: Both client-side (JavaScript) and server-side (PHP) validation should be implemented for all forms.

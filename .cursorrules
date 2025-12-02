@@ -1,0 +1,335 @@
+# Role
+You are an expert PHP Developer specializing in Native (Vanilla) PHP web applications. You are building a complex Admin Panel using the Mazer template.
+
+# Tech Stack
+- **Language:** PHP 8+ (Native/Vanilla, NO Frameworks).
+- **Database:** MySQLi (Prepared Statements ONLY).
+- **Frontend:** HTML5, CSS3, Vanilla JS.
+- **Admin Template:** Mazer 1.0.0 (Source HTML in `mazer-1.0.0/dist`).
+- **File Structure:** Logic-View Separation (Logic at top, HTML at bottom).
+
+# PRODUCT MANAGEMENT ENHANCEMENT - IMPLEMENTATION PLAN
+
+## 🎯 Overview
+Enhance the product management system by connecting all functionality to the `laptop_advisor_db` database, implementing proper image handling with the `LaptopAdvisor/images` directory, and completing all admin features referenced in `admin/admin_products.php`.
+
+---
+
+## 📋 IMPLEMENTATION CHECKLIST
+
+### Phase 1️⃣: Database Integration & Schema Verification
+**Goal:** Ensure all database operations use the correct schema from `laptop_advisor_db.sql`
+
+#### ✅ Database Schema (Based on `laptop_advisor_db.sql` lines 834-848)
+```sql
+products Table Structure:
+- product_id (INT, PRIMARY KEY, AUTO_INCREMENT)
+- product_name (VARCHAR 255)
+- brand (VARCHAR 100)
+- price (DECIMAL 10,2)
+- cpu (VARCHAR 100)
+- gpu (VARCHAR 100)
+- ram_gb (INT) -- NOTE: Column is 'ram_gb' not 'ram_size'
+- storage_gb (INT) -- NOTE: Column is 'storage_gb' not 'storage_size'
+- storage_type (VARCHAR 50, DEFAULT 'SSD')
+- display_size (DECIMAL 4,2)
+- image_url (VARCHAR 255)
+- description (TEXT)
+- primary_use_case (VARCHAR 100) -- Gaming, Business, Student, Creative, General
+```
+
+#### 🔧 Tasks:
+- [ ] **Update all SQL queries** in `admin_products.php` to use correct column names:
+  - Replace `ram_size` → `ram_gb`
+  - Replace `storage_size` → `storage_gb`
+  - Ensure `storage_type` column is included
+- [ ] **Fix CSV upload function** (lines 41-87) to match database schema
+- [ ] **Fix Add Product form** to use correct database columns
+- [ ] **Add proper validation** for all product fields
+
+---
+
+### Phase 2️⃣: Image Upload & Management
+**Goal:** Properly handle product images in `LaptopAdvisor/images` directory
+
+#### 📁 Image Directory Structure:
+```
+LaptopAdvisor/images/
+├── laptop1.png (existing)
+├── laptop2.png (existing)
+├── laptop3.png (existing)
+├── laptop4.jpg (existing)
+├── laptop5.png (existing)
+├── laptop6.png (existing)
+├── laptop7.png (existing)
+├── laptop8.png (existing)
+└── product_*.* (new uploads)
+```
+
+#### 🔧 Tasks:
+- [ ] **Fix image upload path** (line 106) - Currently correct: `../LaptopAdvisor/images/`
+- [ ] **Add image validation**:
+  - Allowed types: JPG, JPEG, PNG, WEBP
+  - Max size: 5MB
+  - Minimum dimensions: 400x300px
+- [ ] **Fix image display in product table** (line 410):
+  - Update path to work from admin panel: `../LaptopAdvisor/images/filename`
+  - Add fallback image if product has no image
+- [ ] **Add image deletion** when product is deleted
+- [ ] **Create image preview** in Add/Edit product modal
+
+---
+
+### Phase 3️⃣: Complete "Add New Product" Modal
+**Goal:** Make the Add Product modal (lines 453-505) fully functional
+
+#### Current Issues:
+- Form at line 461 has `action="#"` (no submission)
+- Form fields don't match POST handler (line 90-129)
+- Missing brand field in modal
+- Modal form is not connected to PHP handler
+
+#### 🔧 Tasks:
+- [ ] **Update modal form** (lines 453-505):
+  ```html
+  <form method="POST" enctype="multipart/form-data" id="addProductForm">
+    <input type="hidden" name="add_product" value="1">
+    <!-- Add all required fields with proper names -->
+  </form>
+  ```
+- [ ] **Add required fields to modal**:
+  - [x] Product Name (product_name)
+  - [x] Category (category) 
+  - [x] Price (price)
+  - [ ] **Brand** (brand) - MISSING
+  - [ ] **CPU** (cpu) - MISSING
+  - [ ] **GPU** (gpu) - MISSING
+  - [ ] **RAM GB** (ram) - MISSING
+  - [ ] **Storage GB** (storage) - MISSING
+  - [ ] **Storage Type** (storage_type) - MISSING
+  - [ ] **Display Size** (display) - MISSING
+  - [ ] **Description** (description) - MISSING
+  - [x] Product Image (product_image)
+- [ ] **Connect form to PHP handler** - Add proper form submission
+- [ ] **Add client-side validation** using JavaScript
+- [ ] **Update "Save Product" button** to submit the form properly
+
+---
+
+### Phase 4️⃣: Fix Brand & Category Filtering
+**Goal:** Make dropdown filters functional (lines 334-358)
+
+#### Current Issues:
+- Dropdowns use `onclick="event.preventDefault()"` - no actual filtering
+- No JavaScript to handle filter selection
+- No PHP to handle filter parameters
+
+#### 🔧 Tasks:
+- [ ] **Add filter parameters to URL**:
+  ```php
+  $brand_filter = $_GET['brand'] ?? '';
+  $category_filter = $_GET['category'] ?? '';
+  ```
+- [ ] **Update SQL query** (line 162) to include WHERE clauses:
+  ```php
+  $query = "SELECT * FROM products WHERE 1=1";
+  if ($brand_filter) $query .= " AND brand = ?";
+  if ($category_filter) $query .= " AND primary_use_case = ?";
+  $query .= " ORDER BY product_id DESC";
+  ```
+- [ ] **Update dropdown links** to use proper hrefs:
+  ```html
+  <a class="dropdown-item" href="?brand=Apple">Apple</a>
+  <a class="dropdown-item" href="?category=Gaming">Gaming</a>
+  ```
+- [ ] **Add active state** to show selected filter
+- [ ] **Add "Clear Filters" button**
+
+---
+
+### Phase 5️⃣: Fix CSV Bulk Upload
+**Goal:** Make CSV upload fully functional (lines 41-87 & 507-537)
+
+#### Current Issues:
+- Upload function is incomplete (line 1004-1017)
+- CSV format doesn't match database schema
+- No file validation
+- Modal form not connected to PHP handler
+
+#### 🔧 Tasks:
+- [ ] **Update CSV format** in modal (line 524):
+  ```
+  Name, Brand, Price, Category, CPU, GPU, RAM_GB, Storage_GB, Storage_Type, Display_Size, Description
+  ```
+- [ ] **Update CSV upload modal** (lines 507-537):
+  ```html
+  <form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="bulk_upload_csv" value="1">
+    <input type="file" name="csv_file" class="form-control" id="csvFile" accept=".csv">
+  </form>
+  ```
+- [ ] **Fix PHP handler** (lines 41-87):
+  - Update to use `ram_gb` instead of `ram_size`
+  - Update to use `storage_gb` instead of `storage_size`
+  - Add `storage_type` column
+  - Add proper error handling
+  - Add transaction support for rollback on error
+- [ ] **Create sample CSV file** for download
+- [ ] **Add progress indicator** for upload
+- [ ] **Add validation summary** after upload
+
+---
+
+### Phase 6️⃣: Export CSV Functionality
+**Goal:** Fix Export CSV button (line 379 & line 6-38)
+
+#### Current Issues:
+- Export button doesn't have proper link
+- PHP handler exists but button isn't connected
+
+#### 🔧 Tasks:
+- [ ] **Update Export button** (line 379):
+  ```html
+  <a href="?action=export_csv" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-download"></i> Export CSV
+  </a>
+  ```
+- [ ] **Fix column names in export** (lines 17-33):
+  - Update to use `ram_gb` instead of `ram_size`
+  - Update to use `storage_gb` instead of `storage_size`
+  - Add `storage_type` column
+
+---
+
+### Phase 7️⃣: Stock Management (Optional Enhancement)
+**Goal:** Add actual stock tracking (currently mocked at line 169)
+
+#### Current State:
+```php
+$row['stock'] = rand(0, 100); // Mock stock - NOT REAL DATA
+```
+
+#### 🔧 Tasks:
+- [ ] **Add stock columns to products table**:
+  ```sql
+  ALTER TABLE products 
+  ADD COLUMN stock_quantity INT DEFAULT 0,
+  ADD COLUMN min_stock_level INT DEFAULT 10;
+  ```
+- [ ] **Update product fetch query** to include real stock
+- [ ] **Add stock input** to Add/Edit product form
+- [ ] **Add bulk stock update** feature
+
+---
+
+## 🎨 CLIENT-SIDE INTEGRATION
+
+### Image Display on Client Side
+**Location:** `LaptopAdvisor/images/` (verified existing)
+
+#### 🔧 Tasks:
+- [ ] **Verify all product images** are properly referenced:
+  ```php
+  // In admin panel
+  $image_path = '../LaptopAdvisor/images/' . $product['image_url'];
+  
+  // In client pages (products.php, product_details.php)
+  $image_path = 'images/' . $product['image_url'];
+  ```
+- [ ] **Add image optimization**:
+  - Create thumbnail versions for product listings
+  - Use lazy loading for better performance
+- [ ] **Add placeholder image** for products without images
+
+---
+
+## 🔒 Security Enhancements
+
+#### 🔧 Tasks:
+- [ ] **Add CSRF protection** to all forms
+- [ ] **Add file upload security**:
+  - Check file mime type (not just extension)
+  - Sanitize filename
+  - Move to safe directory outside web root if possible
+- [ ] **Add user authentication check** on all admin pages
+- [ ] **Use prepared statements** everywhere (mostly done)
+- [ ] **Sanitize all outputs** with `htmlspecialchars()`
+
+---
+
+## 🧪 Testing Checklist
+
+- [ ] Test Add Product with image upload
+- [ ] Test Add Product without image
+- [ ] Test Edit Product (once implemented)
+- [ ] Test Delete Product (single)
+- [ ] Test Bulk Delete Products
+- [ ] Test CSV Upload with valid file
+- [ ] Test CSV Upload with invalid file
+- [ ] Test CSV Export
+- [ ] Test Brand filter
+- [ ] Test Category filter
+- [ ] Test image display in product list
+- [ ] Test image display on client-side pages
+- [ ] Test all forms with XSS attempts
+- [ ] Test SQL injection attempts
+
+---
+
+## 📝 Database Connection Verification
+
+**File:** `admin/includes/db_connect.php`
+
+Ensure this file exists and contains:
+```php
+<?php
+$host = 'localhost';
+$db = 'laptop_advisor_db';
+$user = 'root';
+$pass = '';
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$conn->set_charset('utf8mb4');
+?>
+```
+
+---
+
+## 🚀 Priority Order for Implementation
+
+1. **CRITICAL:** Fix database column names (Phase 1)
+2. **HIGH:** Complete Add Product modal (Phase 3)
+3. **HIGH:** Fix image upload & display (Phase 2)
+4. **MEDIUM:** Fix Brand/Category filters (Phase 4)
+5. **MEDIUM:** Fix CSV upload (Phase 5)
+6. **LOW:** Fix CSV export (Phase 6)
+7. **OPTIONAL:** Add stock management (Phase 7)
+
+---
+
+## ⚠️ Known Issues to Fix
+
+1. **Duplicate HTML sections** (lines 673-793 duplicate lines 330-449)
+2. **Unclosed JavaScript function** at line 1012
+3. **Missing form method/action** in Add Product modal
+4. **Missing Brand field** in modal but exists in PHP handler
+5. **Column name mismatches** between PHP and database
+
+---
+
+## 📖 References
+
+- Database Schema: `laptop_advisor_db.sql` (lines 834-862)
+- Admin Products Page: `admin/admin_products.php`
+- Image Directory: `LaptopAdvisor/images/`
+- Mazer Template: `admin/source/assets/`
+
+---
+
+**Last Updated:** 2025-12-01
+**Status:** READY FOR IMPLEMENTATION REVIEW

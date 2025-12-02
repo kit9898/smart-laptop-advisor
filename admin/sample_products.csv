@@ -1,0 +1,11 @@
+Name,Brand,Price,Product_Type,Related_To,Use_Case,CPU,GPU,RAM_GB,Storage_GB,Storage_Type,Display,Description
+Dell XPS 15,Dell,1599.99,laptop,,Business,Intel Core i7-13700H,NVIDIA RTX 4050,16,512,SSD,15.6,"Premium business laptop with stunning display and powerful performance"
+MacBook Pro 14,Apple,1999.99,laptop,,Creative,Apple M3 Pro,Integrated,18,512,SSD,14.2,"Professional-grade laptop for creative work with excellent display"
+ASUS ROG Strix G15,ASUS,1299.99,laptop,,Gaming,AMD Ryzen 7 7735HS,NVIDIA RTX 4060,16,1000,SSD,15.6,"High-performance gaming laptop with RGB lighting"
+Lenovo ThinkPad X1,Lenovo,1399.99,laptop,,Business,Intel Core i5-1340P,Intel Iris Xe,16,512,SSD,14.0,"Business ultrabook with legendary keyboard and security features"
+HP Pavilion 15,HP,799.99,laptop,,Student,Intel Core i5-1235U,Intel Iris Xe,8,512,SSD,15.6,"Affordable laptop perfect for students and everyday computing"
+Logitech G Pro X,Logitech,129.99,mouse,Gaming,Gaming,,,,,,,"Professional gaming mouse with HERO sensor and customizable buttons"
+Razer BlackWidow V3,Razer,139.99,keyboard,Gaming,Gaming,,,,,,,"Mechanical gaming keyboard with Razer Green switches and RGB"
+SteelSeries Arctis 7,SteelSeries,149.99,headset,Gaming,Gaming,,,,,,,"Wireless gaming headset with lossless audio and 24-hour battery"
+Dell UltraSharp U2723DE,Dell,549.99,monitor,Business,Business,,,,,,,27,"27-inch QHD monitor with USB-C hub and excellent color accuracy"
+Targus CitySmart Backpack,Targus,59.99,bag,Business,Business,,,,,,,"Professional laptop backpack with multiple compartments"
