@@ -6,6 +6,7 @@
 
 session_start();
 require_once 'includes/db_connect.php';
+require_once 'includes/functions.php';
 
 // Log the logout activity if admin is logged in
 if (isset($_SESSION['admin_id'])) {
@@ -13,12 +14,8 @@ if (isset($_SESSION['admin_id'])) {
     $ip_address = $_SERVER['REMOTE_ADDR'];
     
     // Log logout activity
-    $activity_query = "INSERT INTO admin_activity_log (admin_id, action, description, ip_address) 
-        VALUES (?, 'logout', 'Admin logged out', ?)";
-    $stmt = mysqli_prepare($conn, $activity_query);
-    mysqli_stmt_bind_param($stmt, 'is', $admin_id, $ip_address);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    // Log logout activity
+    logActivity($conn, $admin_id, 'logout', 'auth', 'Admin logged out');
     
     // Delete session from database
     if (isset($_SESSION['session_token'])) {

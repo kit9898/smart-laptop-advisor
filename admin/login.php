@@ -9,6 +9,7 @@ session_start();
 
 // Include database connection
 require_once 'includes/db_connect.php';
+require_once 'includes/functions.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
@@ -92,12 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 mysqli_stmt_close($session_stmt);
                 
                 // Log admin activity
-                $activity_query = "INSERT INTO admin_activity_log (admin_id, action, description, ip_address) 
-                    VALUES (?, 'login', 'Admin logged in successfully', ?)";
-                $activity_stmt = mysqli_prepare($conn, $activity_query);
-                mysqli_stmt_bind_param($activity_stmt, 'is', $admin['admin_id'], $ip_address);
-                mysqli_stmt_execute($activity_stmt);
-                mysqli_stmt_close($activity_stmt);
+                // Log admin activity
+                logActivity($conn, $admin['admin_id'], 'login', 'auth', 'Admin logged in successfully');
                 
                 // Set session variables
                 $_SESSION['admin_logged_in'] = true;

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/db_connect.php';
+require_once '../includes/functions.php';
 
 header('Content-Type: application/json');
 
@@ -22,6 +23,7 @@ switch ($action) {
         $stmt = $conn->prepare("UPDATE orders SET order_status = 'Completed' WHERE order_id = ?");
         $stmt->bind_param("i", $order_id);
         if ($stmt->execute()) {
+            logActivity($conn, $_SESSION['admin_id'], 'update', 'orders', "Verified payment for Order #$order_id", 'order', $order_id);
             echo json_encode(['success' => true, 'message' => 'Payment verified successfully']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Database error']);
@@ -42,6 +44,7 @@ switch ($action) {
         $update->bind_param("ii", $new_status, $order_id);
         
         if ($update->execute()) {
+            logActivity($conn, $_SESSION['admin_id'], 'update', 'orders', "Toggled flag status for Order #$order_id to " . ($new_status ? 'Flagged' : 'Unflagged'), 'order', $order_id);
             echo json_encode(['success' => true, 'is_flagged' => $new_status, 'message' => 'Flag status updated']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Database error']);
@@ -60,6 +63,9 @@ switch ($action) {
             $stmt_items->bind_param("i", $order_id);
             $stmt_items->execute();
             
+            $stmt_items->execute();
+            
+            logActivity($conn, $_SESSION['admin_id'], 'delete', 'orders', "Deleted transaction/order #$order_id", 'order', $order_id);
             echo json_encode(['success' => true, 'message' => 'Transaction removed successfully']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Database error']);

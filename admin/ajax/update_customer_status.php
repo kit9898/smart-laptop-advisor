@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/db_connect.php';
+require_once '../includes/functions.php';
 
 header('Content-Type: application/json');
 
@@ -29,6 +30,7 @@ $stmt = $conn->prepare("UPDATE users SET status = ? WHERE user_id = ?");
 $stmt->bind_param("si", $status, $user_id);
 
 if ($stmt->execute()) {
+    logActivity($conn, $_SESSION['admin_id'], 'update', 'users', "Updated status for user ID: $user_id to $status", 'user', $user_id);
     echo json_encode(['success' => true]);
 } else {
     echo json_encode(['success' => false, 'error' => 'Database update failed']);
