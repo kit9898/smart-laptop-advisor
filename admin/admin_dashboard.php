@@ -5,7 +5,7 @@ require_once 'includes/db_connect.php';
 // --- Logic: Fetch Statistics ---
 
 // 1. Total Revenue
-$sql_revenue = "SELECT SUM(total_amount) as total_revenue FROM orders";
+$sql_revenue = "SELECT SUM(total_amount) as total_revenue FROM orders WHERE order_status != 'Cancelled'";
 $result_revenue = $conn->query($sql_revenue);
 $row_revenue = $result_revenue->fetch_assoc();
 $total_revenue = $row_revenue['total_revenue'] ?? 0;
@@ -28,6 +28,76 @@ $result_chat = $conn->query($sql_chat);
 $row_chat = $result_chat->fetch_assoc();
 $total_interactions = $row_chat['total_interactions'] ?? 0;
 
+// --- Logic: Sales & Revenue Chart (Current Year) ---
+$current_year = date('Y');
+$monthly_revenue = array_fill(0, 12, 0);
+$monthly_orders = array_fill(0, 12, 0);
+
+$sql_chart = "SELECT MONTH(order_date) as month, SUM(total_amount) as revenue, COUNT(*) as order_count 
+              FROM orders 
+              WHERE YEAR(order_date) = $current_year AND order_status != 'Cancelled'
+              GROUP BY MONTH(order_date)";
+$result_chart = $conn->query($sql_chart);
+
+while ($row = $result_chart->fetch_assoc()) {
+    $monthly_revenue[$row['month'] - 1] = (float)$row['revenue'];
+    $monthly_orders[$row['month'] - 1] = (int)$row['order_count'];
+}
+
+// --- Logic: Best Selling Products ---
+$sql_top_products = "SELECT p.product_name, SUM(oi.quantity) as total_sold 
+                     FROM order_items oi
+                     JOIN products p ON oi.product_id = p.product_id
+                     JOIN orders o ON oi.order_id = o.order_id
+                     WHERE o.order_status != 'Cancelled'
+                     GROUP BY oi.product_id
+                     ORDER BY total_sold DESC
+                     LIMIT 5";
+$result_top_products = $conn->query($sql_top_products);
+
+$top_product_names = [];
+$top_product_sales = [];
+while ($row = $result_top_products->fetch_assoc()) {
+    $top_product_names[] = $row['product_name'];
+    $top_product_sales[] = (int)$row['total_sold'];
+}
+
+// --- Logic: AI Performance ---
+// Accuracy
+$sql_ai_acc = "SELECT AVG(accuracy_score) as avg_accuracy FROM recommendation_logs WHERE accuracy_score IS NOT NULL";
+$result_ai_acc = $conn->query($sql_ai_acc);
+$ai_accuracy = round(($result_ai_acc->fetch_assoc()['avg_accuracy'] ?? 0) * 100, 1);
+
+// Conversion (Success rate)
+$sql_ai_conv = "SELECT 
+    (SELECT COUNT(*) FROM recommendation_logs WHERE status = 'success') * 100.0 / 
+    (SELECT COUNT(*) FROM recommendation_logs) as conversion_rate";
+$result_ai_conv = $conn->query($sql_ai_conv);
+$ai_conversion = round($result_ai_conv->fetch_assoc()['conversion_rate'] ?? 0, 1);
+
+// Persona Distribution
+$sql_personas = "SELECT p.name as persona_name, COUNT(rl.log_id) as count 
+                 FROM recommendation_logs rl
+                 JOIN personas p ON rl.persona_id = p.persona_id
+                 GROUP BY rl.persona_id
+                 ORDER BY count DESC
+                 LIMIT 3";
+$result_personas = $conn->query($sql_personas);
+$persona_stats = [];
+$total_recs = 0;
+while ($row = $result_personas->fetch_assoc()) {
+    $persona_stats[] = $row;
+    $total_recs += $row['count'];
+}
+
+// --- Logic: Recent System Activities ---
+$sql_activities = "SELECT a.*, u.first_name, u.last_name 
+                   FROM admin_activity_log a
+                   LEFT JOIN admin_users u ON a.admin_id = u.admin_id
+                   ORDER BY a.created_at DESC
+                   LIMIT 5";
+$result_activities = $conn->query($sql_activities);
+
 // --- Logic: Fetch Recent Orders ---
 $sql_recent = "SELECT o.order_id, u.full_name, o.total_amount, o.order_status, o.order_date 
                FROM orders o 
@@ -35,6 +105,7 @@ $sql_recent = "SELECT o.order_id, u.full_name, o.total_amount, o.order_status, o
                ORDER BY o.order_date DESC 
                LIMIT 5";
 $result_recent = $conn->query($sql_recent);
+
 
 ?>
 <!DOCTYPE html>
@@ -220,44 +291,38 @@ $result_recent = $conn->query($sql_recent);
                                 <div class="row mb-3">
                                     <div class="col-6">
                                         <div class="text-center">
-                                            <h3 class="text-primary">87.5%</h3>
+                                            <h3 class="text-primary"><?= $ai_accuracy ?>%</h3>
                                             <p class="text-muted mb-0">Accuracy Rate</p>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="text-center">
-                                            <h3 class="text-success">23.2%</h3>
+                                            <h3 class="text-success"><?= $ai_conversion ?>%</h3>
                                             <p class="text-muted mb-0">Conversion Rate</p>
                                         </div>
                                     </div>
                                 </div>
+                                <?php 
+                                $colors = ['bg-primary', 'bg-success', 'bg-info'];
+                                $i = 0;
+                                foreach ($persona_stats as $stat): 
+                                    $percentage = $total_recs > 0 ? ($stat['count'] / $total_recs) * 100 : 0;
+                                    $color = $colors[$i % 3];
+                                    $i++;
+                                ?>
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between mb-1">
-                                        <small>Student Persona</small>
-                                        <small>342 recommendations</small>
+                                        <small><?= htmlspecialchars($stat['persona_name']) ?></small>
+                                        <small><?= $stat['count'] ?> recommendations</small>
                                     </div>
                                     <div class="progress mb-2">
-                                        <div class="progress-bar bg-primary" style="width: 45%"></div>
+                                        <div class="progress-bar <?= $color ?>" style="width: <?= $percentage ?>%"></div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small>Gaming Persona</small>
-                                        <small>287 recommendations</small>
-                                    </div>
-                                    <div class="progress mb-2">
-                                        <div class="progress-bar bg-success" style="width: 38%"></div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small>Business Persona</small>
-                                        <small>156 recommendations</small>
-                                    </div>
-                                    <div class="progress mb-2">
-                                        <div class="progress-bar bg-info" style="width: 21%"></div>
-                                    </div>
-                                </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($persona_stats)): ?>
+                                    <p class="text-center text-muted">No recommendation data available yet.</p>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -267,44 +332,41 @@ $result_recent = $conn->query($sql_recent);
                                 <h4>Recent System Activities</h4>
                             </div>
                             <div class="card-body">
-                                <div class="activity-item d-flex align-items-center mb-3">
-                                    <div class="activity-icon bg-success text-white rounded-circle me-3">
-                                        <i class="bi bi-plus"></i>
+                                <?php if ($result_activities->num_rows > 0): ?>
+                                    <?php while($act = $result_activities->fetch_assoc()): 
+                                        $icon = 'bi-circle';
+                                        $bg_class = 'bg-secondary';
+                                        
+                                        if ($act['action'] == 'create') { $icon = 'bi-plus'; $bg_class = 'bg-success'; }
+                                        elseif ($act['action'] == 'update') { $icon = 'bi-pencil'; $bg_class = 'bg-primary'; }
+                                        elseif ($act['action'] == 'delete') { $icon = 'bi-trash'; $bg_class = 'bg-danger'; }
+                                        elseif ($act['action'] == 'login') { $icon = 'bi-box-arrow-in-right'; $bg_class = 'bg-info'; }
+                                        elseif ($act['action'] == 'logout') { $icon = 'bi-box-arrow-right'; $bg_class = 'bg-warning'; }
+                                        
+                                        // Calculate time ago
+                                        $time_ago = '';
+                                        $diff = time() - strtotime($act['created_at']);
+                                        if ($diff < 60) $time_ago = $diff . ' sec ago';
+                                        elseif ($diff < 3600) $time_ago = floor($diff / 60) . ' min ago';
+                                        elseif ($diff < 86400) $time_ago = floor($diff / 3600) . ' hr ago';
+                                        else $time_ago = floor($diff / 86400) . ' days ago';
+                                    ?>
+                                    <div class="activity-item d-flex align-items-center mb-3">
+                                        <div class="activity-icon <?= $bg_class ?> text-white rounded-circle me-3" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi <?= $icon ?>"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-0 small"><?= htmlspecialchars($act['description']) ?></p>
+                                            <small class="text-muted" style="font-size: 0.75rem;"><?= $time_ago ?> • <?= htmlspecialchars($act['first_name'] ?? 'System') ?></small>
+                                        </div>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0">New laptop added: Dell XPS 13</p>
-                                        <small class="text-muted">2 minutes ago</small>
-                                    </div>
-                                </div>
-                                <div class="activity-item d-flex align-items-center mb-3">
-                                    <div class="activity-icon bg-primary text-white rounded-circle me-3">
-                                        <i class="bi bi-cart"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0">Order #ORD-2024-001 processed</p>
-                                        <small class="text-muted">15 minutes ago</small>
-                                    </div>
-                                </div>
-                                <div class="activity-item d-flex align-items-center mb-3">
-                                    <div class="activity-icon bg-warning text-white rounded-circle me-3">
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0">Low stock alert: MacBook Air M2</p>
-                                        <small class="text-muted">1 hour ago</small>
-                                    </div>
-                                </div>
-                                <div class="activity-item d-flex align-items-center mb-3">
-                                    <div class="activity-icon bg-info text-white rounded-circle me-3">
-                                        <i class="bi bi-robot"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0">AI model retrained successfully</p>
-                                        <small class="text-muted">3 hours ago</small>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <button class="btn btn-outline-primary btn-sm">View All Activities</button>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <p class="text-center text-muted">No recent activities.</p>
+                                <?php endif; ?>
+                                
+                                <div class="text-center mt-3">
+                                    <a href="admin_logs.php" class="btn btn-outline-primary btn-sm">View All Activities</a>
                                 </div>
                             </div>
                         </div>
@@ -322,28 +384,28 @@ $result_recent = $conn->query($sql_recent);
                                 <div class="row">
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="d-grid">
-                                            <button class="btn btn-primary" onclick="location.href='admin-products.html'">
+                                            <button class="btn btn-primary" onclick="location.href='admin_products.php'">
                                                 <i class="bi bi-plus-circle me-2"></i>Add New Product
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="d-grid">
-                                            <button class="btn btn-success" onclick="location.href='admin-orders.html'">
+                                            <button class="btn btn-success" onclick="location.href='admin_orders.php'">
                                                 <i class="bi bi-eye me-2"></i>View Orders
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="d-grid">
-                                            <button class="btn btn-info" onclick="location.href='admin-ai-weightage.html'">
+                                            <button class="btn btn-info" onclick="location.href='admin_ai_weightage.php'">
                                                 <i class="bi bi-sliders me-2"></i>Configure AI
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="d-grid">
-                                            <button class="btn btn-warning" onclick="location.href='admin-conversation-logs.html'">
+                                            <button class="btn btn-warning" onclick="location.href='admin_conversation_logs.php'">
                                                 <i class="bi bi-chat-dots me-2"></i>Check Chatbot
                                             </button>
                                         </div>
@@ -413,13 +475,14 @@ $result_recent = $conn->query($sql_recent);
 
     <script>
         // Sales & Revenue Chart
+        // Sales & Revenue Chart
         var salesOptions = {
             series: [{
                 name: 'Revenue',
-                data: [31000, 40000, 28000, 51000, 42000, 82000, 56000, 68000, 91000, 125000, 98000, 87000]
+                data: <?= json_encode($monthly_revenue) ?>
             }, {
                 name: 'Orders',
-                data: [150, 180, 125, 220, 195, 310, 245, 285, 365, 425, 380, 340]
+                data: <?= json_encode($monthly_orders) ?>
             }],
             chart: {
                 height: 350,
@@ -435,7 +498,7 @@ $result_recent = $conn->query($sql_recent);
                 curve: 'smooth'
             },
             title: {
-                text: 'Revenue & Orders Over Time',
+                text: 'Revenue & Orders (<?= date("Y") ?>)',
                 align: 'left'
             },
             grid: {
@@ -455,12 +518,12 @@ $result_recent = $conn->query($sql_recent);
 
         // Best Products Chart
         var productsOptions = {
-            series: [44, 55, 13, 43, 22],
+            series: <?= json_encode($top_product_sales) ?>,
             chart: {
                 width: 380,
                 type: 'donut',
             },
-            labels: ['MacBook Pro M3', 'Dell XPS 13', 'ThinkPad X1', 'ASUS ROG', 'HP Spectre'],
+            labels: <?= json_encode($top_product_names) ?>,
             colors: ['#435ebe', '#55c6e8', '#1cc88a', '#f6c23e', '#e74a3b'],
             responsive: [{
                 breakpoint: 480,
@@ -472,7 +535,10 @@ $result_recent = $conn->query($sql_recent);
                         position: 'bottom'
                     }
                 }
-            }]
+            }],
+            noData: {
+                text: 'No sales data available'
+            }
         };
 
         var productsChart = new ApexCharts(document.querySelector("#chart-best-products"), productsOptions);
