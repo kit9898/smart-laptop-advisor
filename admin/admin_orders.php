@@ -22,7 +22,7 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : '';
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 
-$query = "SELECT o.*, u.full_name, u.email FROM orders o LEFT JOIN users u ON o.user_id = u.user_id WHERE 1=1";
+$query = "SELECT o.*, u.full_name, u.email, u.profile_image_url FROM orders o LEFT JOIN users u ON o.user_id = u.user_id WHERE 1=1";
 $params = [];
 $types = "";
 
@@ -291,7 +291,23 @@ $page_title = "Order Management";
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-md me-3">
-                                            <img src="source/assets/images/faces/<?php echo rand(1, 8); ?>.jpg" alt="Face">
+                                            <?php 
+                                            $avatar_src = "source/assets/images/faces/" . rand(1, 8) . ".jpg";
+                                            // Check if user has a custom avatar
+                                            if (!empty($order['profile_image_url'])) {
+                                                $avatar_path = '../LaptopAdvisor/uploads/' . $order['profile_image_url'];
+                                                if (file_exists($avatar_path)) {
+                                                    $avatar_src = $avatar_path;
+                                                } else {
+                                                    // Try without uploads prefix if path already contains it or is just filename
+                                                    $avatar_path = '../LaptopAdvisor/' . $order['profile_image_url'];
+                                                    if (file_exists($avatar_path)) {
+                                                        $avatar_src = $avatar_path;
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <img src="<?php echo htmlspecialchars($avatar_src); ?>" alt="Face" style="object-fit: cover;">
                                         </div>
                                         <div>
                                             <h6 class="mb-0"><?php echo htmlspecialchars($order['full_name'] ?? 'Guest'); ?></h6>

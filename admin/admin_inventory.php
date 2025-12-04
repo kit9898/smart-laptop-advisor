@@ -250,7 +250,22 @@ $page_title = "Inventory Management";
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="<?php echo htmlspecialchars(!empty($item['image_url']) ? '../LaptopAdvisor/' . $item['image_url'] : '../LaptopAdvisor/images/logo.png'); ?>" alt="Product" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="<?php 
+                                                $img_url = $item['image_url'];
+                                                $image_src = '../LaptopAdvisor/images/logo.png'; // Default
+                                                if (!empty($img_url)) {
+                                                    if (strpos($img_url, 'http') === 0) {
+                                                        $image_src = $img_url;
+                                                    } elseif (strpos($img_url, 'LaptopAdvisor/') === 0) {
+                                                        $image_src = '../' . $img_url;
+                                                    } elseif (strpos($img_url, 'images/') === 0) {
+                                                        $image_src = '../LaptopAdvisor/' . $img_url;
+                                                    } else {
+                                                        $image_src = '../LaptopAdvisor/images/' . basename($img_url);
+                                                    }
+                                                }
+                                                echo htmlspecialchars($image_src); 
+                                            ?>" alt="Product" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                             <div>
                                                 <h6 class="mb-0"><?php echo htmlspecialchars($item['product_name']); ?></h6>
                                                 <small class="text-muted"><?php echo htmlspecialchars($item['brand']); ?></small>
