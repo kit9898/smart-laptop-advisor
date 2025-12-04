@@ -55,8 +55,7 @@ $settings_query = "SELECT
     description,
     is_editable
 FROM system_settings
-WHERE category = 'general'
-ORDER BY setting_key";
+ORDER BY FIELD(category, 'general', 'security', 'maintenance'), setting_key";
 
 $settings_result = mysqli_query($conn, $settings_query);
 $settings_by_category = [];
