@@ -347,6 +347,7 @@ function getUseCaseBadge($use_case) {
                         <div class="feature-box"><strong>Graphics</strong><span><?php echo htmlspecialchars($product['gpu']); ?></span></div>
                         <div class="feature-box"><strong>Memory</strong><span><?php echo htmlspecialchars($product['ram_gb']); ?> GB RAM</span></div>
                         <div class="feature-box"><strong>Storage</strong><span><?php echo htmlspecialchars($product['storage_gb']); ?> GB <?php echo htmlspecialchars($product['storage_type']); ?></span></div>
+                        <div class="feature-box"><strong>🔋 Battery Life</strong><span><?php echo htmlspecialchars($product['battery_life'] ?? 'Not specified'); ?></span></div>
                     <?php else: ?>
                         <div class="feature-box"><strong>Category</strong><span><?php echo ucwords(str_replace('_', ' ', $product['product_category'] ?? 'Accessory')); ?></span></div>
                         <div class="feature-box"><strong>Brand</strong><span><?php echo htmlspecialchars($product['brand']); ?></span></div>

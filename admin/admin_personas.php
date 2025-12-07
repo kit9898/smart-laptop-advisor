@@ -289,8 +289,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <i class="bi bi-pencil me-2"></i>Edit</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="viewPersonaAnalytics(<?php echo $persona['persona_id']; ?>)">
                                         <i class="bi bi-graph-up me-2"></i>View Analytics</a></li>
-                                    <li><a class="dropdown-item" href="admin_ai_weightage.php?persona=<?php echo $persona['persona_id']; ?>">
-                                        <i class="bi bi-sliders me-2"></i>Configure Weights</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="#" onclick="deletePersona(<?php echo $persona['persona_id']; ?>)">
                                         <i class="bi bi-trash me-2"></i>Delete</a></li>

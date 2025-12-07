@@ -10,10 +10,20 @@ function isModulePage($pages) {
 
 // Define module pages
 $ecommerce_pages = ['admin_products.php', 'admin_orders.php', 'admin_inventory.php', 'admin_transactions.php'];
-$ai_pages = ['admin_personas.php', 'admin_ai_weightage.php', 'admin_recommendation_logs.php', 'admin_ai_performance.php'];
+$ai_pages = ['admin_personas.php', 'admin_recommendation_logs.php', 'admin_ai_performance.php'];
 $chatbot_pages = ['admin_conversation_logs.php', 'admin_intent_management.php', 'admin_chatbot_training.php', 'admin_chatbot_analytics.php'];
-$admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php', 'admin_system_settings.php'];
+$admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php'];
+
+// Check for dark mode
+$theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
 ?>
+<!-- Dark Mode Support -->
+<link rel="stylesheet" href="source/assets/css/dark.css">
+<script>
+    if (document.cookie.indexOf('admin_theme=dark') !== -1) {
+        document.body.classList.add('dark');
+    }
+</script>
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
                 <div class="sidebar-header">
@@ -73,9 +83,6 @@ $admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php', 'a
                                 <li class="submenu-item <?php echo ($current_page == 'admin_personas.php') ? 'active' : ''; ?>">
                                     <a href="admin_personas.php">Persona Management</a>
                                 </li>
-                                <li class="submenu-item <?php echo ($current_page == 'admin_ai_weightage.php') ? 'active' : ''; ?>">
-                                    <a href="admin_ai_weightage.php">AI Weightage Configuration</a>
-                                </li>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_recommendation_logs.php') ? 'active' : ''; ?>">
                                     <a href="admin_recommendation_logs.php">Recommendation Logs</a>
                                 </li>
@@ -119,9 +126,6 @@ $admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php', 'a
                                 </li>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_roles.php') ? 'active' : ''; ?>">
                                     <a href="admin_roles.php">Role Management</a>
-                                </li>
-                                <li class="submenu-item <?php echo ($current_page == 'admin_system_settings.php') ? 'active' : ''; ?>">
-                                    <a href="admin_system_settings.php">System Settings</a>
                                 </li>
                             </ul>
                         </li>

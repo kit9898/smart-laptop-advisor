@@ -983,6 +983,14 @@ function getGPULabel($score) {
                         <?php endforeach; ?>
                     </tr>
 
+                    <!-- Battery Life -->
+                    <tr>
+                        <td class="spec-label">🔋 Battery Life</td>
+                        <?php foreach ($products as $product): ?>
+                            <td><?php echo htmlspecialchars($product['battery_life'] ?? 'Not specified'); ?></td>
+                        <?php endforeach; ?>
+                    </tr>
+
                     <!-- CPU -->
                     <tr>
                         <td>🔧 Processor (CPU)</td>
@@ -1150,6 +1158,13 @@ function getGPULabel($score) {
                             <span class="spec-label">📺 Display</span>
                             <span class="spec-value <?php if ($product['display_size'] == $best_specs['display_size']) echo 'best'; ?>">
                                 <?php echo $product['display_size']; ?>"
+                            </span>
+                        </div>
+
+                        <div class="spec-row">
+                            <span class="spec-label">🔋 Battery</span>
+                            <span class="spec-value">
+                                <?php echo htmlspecialchars($product['battery_life'] ?? 'N/A'); ?>
                             </span>
                         </div>
                         

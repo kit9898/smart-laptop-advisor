@@ -236,7 +236,7 @@ function generate_bot_response($input) {
         if (!empty($foundProducts)) {
             $productContext = "Found these products:\n";
             foreach ($foundProducts as $p) {
-                $productContext .= "- {$p['product_name']} ({$p['brand']}): \${$p['price']}. Specs: {$p['cpu']}, {$p['gpu']}, {$p['ram_gb']}GB RAM. Best for: {$p['primary_use_case']}.\n";
+                $productContext .= "- {$p['product_name']} ({$p['brand']}): \${$p['price']}. Specs: {$p['cpu']}, {$p['gpu']}, {$p['ram_gb']}GB RAM, Battery: " . ($p['battery_life'] ?? 'N/A') . ". Best for: {$p['primary_use_case']}.\n";
             }
             
             $finalPrompt = "User asked: \"$input\"\n\n" .

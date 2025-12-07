@@ -3,6 +3,12 @@ session_start();
 require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
+// Check authentication
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 // Handle Export CSV
 if (isset($_GET['action']) && $_GET['action'] == 'export_csv') {
     $query = "SELECT * FROM products ORDER BY product_id DESC";
@@ -109,6 +115,7 @@ if (isset($_POST['add_product'])) {
     $storage_type = $conn->real_escape_string($_POST['storage_type'] ?? 'SSD');
     $display = $conn->real_escape_string($_POST['display'] ?? '');
     $description = $conn->real_escape_string($_POST['description'] ?? '');
+    $battery_life = $conn->real_escape_string($_POST['battery_life'] ?? '');
     $video_url = trim($_POST['video_url'] ?? '');
     
     // Phase 2: Handle primary image upload with validation
@@ -172,8 +179,8 @@ if (isset($_POST['add_product'])) {
     
     // Only insert if no image upload errors
     if (!isset($error_message)) {
-        $sql = "INSERT INTO products (product_name, brand, price, product_category, related_to_category, primary_use_case, cpu, gpu, ram_gb, storage_gb, storage_type, display_size, description" . ($image_url ? ", image_url" : "") . ") 
-                VALUES ('$name', '$brand', $price, '$product_category', " . ($related_to_category ? "'$related_to_category'" : "NULL") . ", '$category', '$cpu', '$gpu', $ram_gb, $storage_gb, '$storage_type', '$display', '$description'" . ($image_url ? ", '$image_url'" : "") . ")";
+        $sql = "INSERT INTO products (product_name, brand, price, product_category, related_to_category, primary_use_case, cpu, gpu, ram_gb, storage_gb, storage_type, display_size, battery_life, description" . ($image_url ? ", image_url" : "") . ") 
+                VALUES ('$name', '$brand', $price, '$product_category', " . ($related_to_category ? "'$related_to_category'" : "NULL") . ", '$category', '$cpu', '$gpu', $ram_gb, $storage_gb, '$storage_type', '$display', '$battery_life', '$description'" . ($image_url ? ", '$image_url'" : "") . ")";
         
         if ($conn->query($sql)) {
             $new_product_id = $conn->insert_id;
@@ -252,6 +259,7 @@ if (isset($_POST['edit_product'])) {
     $storage_type = $conn->real_escape_string($_POST['storage_type'] ?? 'SSD');
     $display = $conn->real_escape_string($_POST['display'] ?? '');
     $description = $conn->real_escape_string($_POST['description'] ?? '');
+    $battery_life = $conn->real_escape_string($_POST['battery_life'] ?? '');
     
     // Get current image URL
     $stmt = $conn->prepare("SELECT image_url FROM products WHERE product_id = ?");
@@ -342,6 +350,7 @@ if (isset($_POST['edit_product'])) {
                 storage_gb = $storage_gb, 
                 storage_type = '$storage_type', 
                 display_size = '$display', 
+                battery_life = '$battery_life',
                 description = '$description', 
                 image_url = '$image_url' 
                 WHERE product_id = $product_id";
@@ -1392,6 +1401,11 @@ $page_title = "Product Management";
                                 <label for="productDisplay">Display Size (inches)</label>
                                 <input type="number" class="form-control" id="productDisplay" name="display" placeholder="15.6" step="0.1" min="10" max="20">
                             </div>
+
+                            <div class="form-group mb-3 laptop-only-field">
+                                <label for="productBattery">🔋 Battery Life</label>
+                                <input type="text" class="form-control" id="productBattery" name="battery_life" placeholder="e.g., Up to 10 hours">
+                            </div>
                             
                             <div class="form-group mb-3">
                                 <label for="image">Primary Product Image</label>
@@ -1546,6 +1560,11 @@ $page_title = "Product Management";
                             <div class="form-group mb-3 edit-laptop-only-field">
                                 <label for="editProductDisplay">Display Size (inches)</label>
                                 <input type="number" class="form-control" id="editProductDisplay" name="display" placeholder="15.6" step="0.1" min="10" max="20">
+                            </div>
+
+                            <div class="form-group mb-3 edit-laptop-only-field">
+                                <label for="editProductBattery">🔋 Battery Life</label>
+                                <input type="text" class="form-control" id="editProductBattery" name="battery_life" placeholder="e.g., Up to 10 hours">
                             </div>
                             
                             <div class="form-group mb-3">

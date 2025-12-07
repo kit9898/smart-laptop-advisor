@@ -59,7 +59,7 @@ class RecommendationEngine:
             # Load products
             products_query = """
                 SELECT product_id, product_name, brand, price, ram_gb, storage_gb, 
-                       display_size, cpu, gpu, primary_use_case
+                       display_size, cpu, gpu, battery_life, primary_use_case
                 FROM products
             """
             self.products_df = pd.read_sql(products_query, self.conn)
@@ -99,6 +99,7 @@ class RecommendationEngine:
             self.products_df['brand'] + " " + 
             self.products_df['cpu'] + " " + 
             self.products_df['gpu'] + " " +
+            self.products_df['battery_life'].fillna('') + " " +
             self.products_df['product_name']
         )
         

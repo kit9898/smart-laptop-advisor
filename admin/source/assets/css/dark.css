@@ -1,0 +1,281 @@
+/* Dark Mode Styles */
+body.dark {
+    background-color: #151521;
+    color: #a6a8aa;
+}
+
+/* Sidebar */
+body.dark .sidebar-wrapper {
+    background-color: #1e1e2d;
+    border-right: 1px solid #2a2a3c;
+}
+
+body.dark .sidebar-wrapper .menu .sidebar-title {
+    color: #7c8db5;
+}
+
+body.dark .sidebar-wrapper .menu .sidebar-link {
+    color: #c2c7d0;
+}
+
+body.dark .sidebar-wrapper .menu .sidebar-link:hover {
+    background-color: #2a2a3c;
+}
+
+body.dark .sidebar-wrapper .menu .submenu .submenu-item a {
+    color: #a6a8aa;
+}
+
+body.dark .sidebar-wrapper .menu .submenu .submenu-item a:hover {
+    color: #fff;
+}
+
+/* Cards */
+body.dark .card {
+    background-color: #1e1e2d !important;
+}
+
+body.dark .card .card-header {
+    background-color: transparent !important;
+}
+
+body.dark .card .card-header .card-title,
+body.dark .card .card-header h4 {
+    color: #fff !important;
+}
+
+body.dark .card .card-body,
+body.dark .card .card-content {
+    color: #a6a8aa !important;
+}
+
+/* Typography */
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: #fff !important;
+}
+
+body.dark .text-muted {
+    color: #a6a8aa !important;
+}
+
+body.dark .text-gray-600 {
+    color: #a6a8aa !important;
+}
+
+/* Forms */
+body.dark .form-control,
+body.dark .form-select,
+body.dark .dataTable-input {
+    background-color: #151521;
+    border-color: #2a2a3c;
+    color: #fff;
+}
+
+body.dark .form-control:focus,
+body.dark .form-select:focus,
+body.dark .dataTable-input:focus {
+    background-color: #151521;
+    border-color: #435ebe;
+    color: #fff;
+}
+
+body.dark .form-group label {
+    color: #c2c7d0;
+}
+
+body.dark .input-group-text {
+    background-color: #2a2a3c;
+    border-color: #2a2a3c;
+    color: #a6a8aa;
+}
+
+/* Navbar */
+body.dark header {
+    background-color: #1e1e2d;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Dropdowns */
+body.dark .dropdown-menu {
+    background-color: #1e1e2d;
+    border-color: #2a2a3c;
+}
+
+body.dark .dropdown-item {
+    color: #a6a8aa;
+}
+
+body.dark .dropdown-item:hover {
+    background-color: #2a2a3c;
+    color: #fff;
+}
+
+body.dark .dropdown-divider {
+    border-top-color: #2a2a3c;
+}
+
+/* Tables */
+body.dark .table {
+    color: #a6a8aa;
+    --bs-table-accent-bg: transparent;
+    /* Disable default bootstrap striped color which is often light */
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+}
+
+body.dark .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: var(--bs-table-striped-bg);
+    color: #a6a8aa;
+}
+
+body.dark .table thead th {
+    color: #fff;
+    border-bottom-color: #2a2a3c;
+    background-color: #1e1e2d;
+    /* Ensure header matches card */
+}
+
+body.dark .table td,
+body.dark .table th {
+    border-color: #2a2a3c;
+}
+
+body.dark .table-hover tbody tr:hover {
+    color: #fff;
+    background-color: #2a2a3c;
+}
+
+/* DataTables Specifics */
+body.dark .dataTable-wrapper .dataTable-top,
+body.dark .dataTable-wrapper .dataTable-bottom {
+    color: #a6a8aa;
+}
+
+body.dark .dataTable-selector {
+    background-color: #151521;
+    border-color: #2a2a3c;
+    color: #fff;
+}
+
+body.dark .dataTable-input {
+    background-color: #151521;
+    border-color: #2a2a3c;
+    color: #fff;
+}
+
+body.dark .dataTable-pagination a {
+    color: #a6a8aa;
+}
+
+body.dark .dataTable-pagination a:hover {
+    background-color: #2a2a3c;
+    color: #fff;
+}
+
+body.dark .dataTable-pagination .active a,
+body.dark .dataTable-pagination .active a:focus,
+body.dark .dataTable-pagination .active a:hover {
+    background-color: #435ebe;
+    color: #fff;
+}
+
+body.dark .dataTable-sorter::before,
+body.dark .dataTable-sorter::after {
+    opacity: 0.5;
+    /* Make sort arrows visible but subtle */
+    filter: invert(1);
+    /* Invert color if they are images/svgs matching light theme */
+}
+
+/* Badges & Alerts */
+body.dark .bg-light-primary {
+    background-color: rgba(67, 94, 190, 0.2);
+    color: #fff;
+}
+
+body.dark .bg-light-secondary {
+    background-color: rgba(108, 117, 125, 0.2);
+    color: #fff;
+}
+
+body.dark .bg-light-success {
+    background-color: rgba(25, 135, 84, 0.2);
+    color: #fff;
+}
+
+body.dark .bg-light-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #fff;
+}
+
+body.dark .bg-light-warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #fff;
+}
+
+body.dark .bg-light-info {
+    background-color: rgba(13, 202, 240, 0.2);
+    color: #fff;
+}
+
+/* Custom Page Sections (Customers, Roles, Admins) */
+body.dark .filter-section {
+    background-color: #1e1e2d !important;
+    /* Match card background */
+    color: #a6a8aa;
+    border: 1px solid #2a2a3c;
+}
+
+body.dark .module-header {
+    background-color: #151521 !important;
+    /* Slightly darker than card */
+    color: #fff;
+    border-bottom: 1px solid #2a2a3c;
+}
+
+/* Ensure Matrix Borders are Dark */
+body.dark .permission-matrix .table-bordered {
+    border-color: #2a2a3c;
+}
+
+body.dark .permission-matrix .table-bordered td,
+body.dark .permission-matrix .table-bordered th {
+    border-color: #2a2a3c;
+}
+
+/* Modal Dark Mode */
+body.dark .modal-content {
+    background-color: #1e1e2d;
+    color: #fff;
+    border: 1px solid #2a2a3c;
+}
+
+body.dark .modal-header {
+    border-bottom-color: #2a2a3c;
+}
+
+body.dark .modal-footer {
+    border-top-color: #2a2a3c;
+}
+
+body.dark .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+body.dark .divider .divider-text:before,
+body.dark .divider .divider-text:after {
+    border-top-color: #2a2a3c;
+}
+
+body.dark .page-heading {
+    color: #a6a8aa;
+}
+
+body.dark .burger-btn i {
+    color: #a6a8aa;
+}

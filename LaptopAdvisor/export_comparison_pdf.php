@@ -496,6 +496,14 @@ header('Content-Type: text/html; charset=utf-8');
                         <?php endforeach; ?>
                     </tr>
                     <tr>
+                        <td class="spec-label">🔋 Battery Life</td>
+                        <?php foreach ($products as $index => $product): ?>
+                            <td>
+                                <?php echo htmlspecialchars($product['battery_life'] ?? 'N/A'); ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                    <tr>
                         <td class="spec-label">💰 Price</td>
                         <?php foreach ($products as $index => $product): ?>
                             <td class="<?php echo in_array($index, $analysis['winners']['price']) ? 'highlight-best' : ''; ?>">

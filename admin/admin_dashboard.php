@@ -154,8 +154,8 @@ $result_recent = $conn->query($sql_recent);
                                 <i class="bi bi-person-circle me-2"></i>Admin User
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><a class="dropdown-item" href="admin_profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="admin_settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                             </ul>
@@ -258,7 +258,7 @@ $result_recent = $conn->query($sql_recent);
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-sm btn-outline-primary active" data-period="30">30 Days</button>
                                     <button class="btn btn-sm btn-outline-primary" data-period="90">90 Days</button>
-                                    <button class="btn btn-sm btn-outline-secondary">
+                                    <button class="btn btn-sm btn-outline-secondary" id="btn-export-csv">
                                         <i class="bi bi-download"></i> Export CSV
                                     </button>
                                 </div>
@@ -344,9 +344,13 @@ $result_recent = $conn->query($sql_recent);
                                         elseif ($act['action'] == 'logout') { $icon = 'bi-box-arrow-right'; $bg_class = 'bg-warning'; }
                                         
                                         // Calculate time ago
-                                        $time_ago = '';
+                                        // Set timezone to match DB (Asia/Kuala_Lumpur)
+                                        date_default_timezone_set('Asia/Kuala_Lumpur');
                                         $diff = time() - strtotime($act['created_at']);
-                                        if ($diff < 60) $time_ago = $diff . ' sec ago';
+                                        
+                                        if ($diff < 0) $diff = 0; // Handle clock skew
+                                        
+                                        if ($diff < 60) $time_ago = 'Just now';
                                         elseif ($diff < 3600) $time_ago = floor($diff / 60) . ' min ago';
                                         elseif ($diff < 86400) $time_ago = floor($diff / 3600) . ' hr ago';
                                         else $time_ago = floor($diff / 86400) . ' days ago';
@@ -396,13 +400,7 @@ $result_recent = $conn->query($sql_recent);
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <div class="d-grid">
-                                            <button class="btn btn-info" onclick="location.href='admin_ai_weightage.php'">
-                                                <i class="bi bi-sliders me-2"></i>Configure AI
-                                            </button>
-                                        </div>
-                                    </div>
+
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="d-grid">
                                             <button class="btn btn-warning" onclick="location.href='admin_conversation_logs.php'">
@@ -474,7 +472,13 @@ $result_recent = $conn->query($sql_recent);
     </div>
 
     <script>
-        // Sales & Revenue Chart
+        // Check for dark mode
+        const isDarkMode = document.body.classList.contains('dark') || document.cookie.indexOf('admin_theme=dark') !== -1;
+        const chartTheme = isDarkMode ? 'dark' : 'light';
+        const chartBg = isDarkMode ? '#1e1e2d' : '#fff';
+        const gridColor = isDarkMode ? '#2a2a3c' : '#f3f3f3';
+        const textColor = isDarkMode ? '#a6a8aa' : '#333';
+
         // Sales & Revenue Chart
         var salesOptions = {
             series: [{
@@ -489,7 +493,12 @@ $result_recent = $conn->query($sql_recent);
                 type: 'area',
                 zoom: {
                     enabled: false
-                }
+                },
+                background: 'transparent', // Let CSS handle container bg
+                foreColor: textColor
+            },
+            theme: {
+                mode: chartTheme
             },
             dataLabels: {
                 enabled: false
@@ -499,16 +508,22 @@ $result_recent = $conn->query($sql_recent);
             },
             title: {
                 text: 'Revenue & Orders (<?= date("Y") ?>)',
-                align: 'left'
+                align: 'left',
+                style: { color: textColor }
             },
             grid: {
                 row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
+                    colors: [gridColor, 'transparent'], // Alternating row colors
+                    opacity: 0.1
                 },
+                borderColor: gridColor
             },
             xaxis: {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: { style: { colors: textColor } }
+            },
+            yaxis: {
+                labels: { style: { colors: textColor } }
             },
             colors: ['#435ebe', '#55c6e8']
         };
@@ -522,6 +537,14 @@ $result_recent = $conn->query($sql_recent);
             chart: {
                 width: 380,
                 type: 'donut',
+                background: 'transparent',
+                foreColor: textColor
+            },
+            theme: {
+                mode: chartTheme,
+                monochrome: {
+                    enabled: false
+                }
             },
             labels: <?= json_encode($top_product_names) ?>,
             colors: ['#435ebe', '#55c6e8', '#1cc88a', '#f6c23e', '#e74a3b'],
@@ -536,8 +559,20 @@ $result_recent = $conn->query($sql_recent);
                     }
                 }
             }],
+            stroke: {
+                show: true,
+                colors: [isDarkMode ? '#1e1e2d' : '#fff'] // Border around slices
+            },
+            legend: {
+                labels: {
+                    colors: textColor
+                }
+            },
             noData: {
-                text: 'No sales data available'
+                text: 'No sales data available',
+                style: {
+                     color: textColor
+                }
             }
         };
 
@@ -545,13 +580,56 @@ $result_recent = $conn->query($sql_recent);
         productsChart.render();
 
         // Period buttons functionality
+        let currentPeriod = 30; // Default
+
+        const updateChart = (period) => {
+            currentPeriod = period;
+            
+            // Show loading state if desired, or just fetch
+            fetch(`ajax/get_dashboard_data.php?period=${period}`)
+                .then(response => response.json())
+                .then(data => {
+                    salesChart.updateOptions({
+                        xaxis: {
+                            categories: data.categories
+                        },
+                        series: [{
+                            name: 'Revenue',
+                            data: data.revenue
+                        }, {
+                            name: 'Orders',
+                            data: data.orders
+                        }],
+                         title: {
+                            text: `Revenue & Orders (Last ${period} Days)`
+                        }
+                    });
+                })
+                .catch(err => console.error('Error fetching data:', err));
+        };
+
         document.querySelectorAll('[data-period]').forEach(button => {
             button.addEventListener('click', function() {
+                // Update active state
                 document.querySelectorAll('[data-period]').forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                // Here you would typically reload the chart data for the selected period
+                
+                // Fetch data
+                const period = this.getAttribute('data-period');
+                updateChart(period);
             });
         });
+
+        // Export CSV
+        document.getElementById('btn-export-csv').addEventListener('click', function() {
+            window.location.href = `ajax/get_dashboard_data.php?period=${currentPeriod}&format=csv`;
+        });
+
+        // Trigger default load (30 days) to match initial UI state
+        // Note: Initial PHP render shows yearly data. We override this to match the "active" button.
+        if (document.querySelector('[data-period="30"]').classList.contains('active')) {
+            updateChart(30);
+        }
     </script>
 </body>
 </html>

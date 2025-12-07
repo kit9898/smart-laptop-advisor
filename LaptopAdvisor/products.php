@@ -421,6 +421,9 @@ $categories_query = $conn->query("SELECT DISTINCT product_category FROM products
                                     <span class="spec-tag">💾 <?php echo $row['ram_gb']; ?>GB</span>
                                     <span class="spec-tag">💿 <?php echo $row['storage_gb']; ?>GB</span>
                                     <span class="spec-tag">📺 <?php echo $row['display_size']; ?>"</span>
+                                    <p style="font-size: 0.85rem; color: #666; margin: 5px 0; width: 100%;">
+                                        <strong>🔋</strong> <?php echo htmlspecialchars($row['battery_life'] ?? 'N/A'); ?>
+                                    </p>
                                 <?php else: ?>
                                     <span class="spec-tag">📦 <?php echo ucwords(str_replace('_', ' ', $row['product_category'])); ?></span>
                                     <span class="spec-tag">✨ <?php echo htmlspecialchars($row['primary_use_case']); ?></span>
