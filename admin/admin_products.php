@@ -557,7 +557,7 @@ if ($persona_result->num_rows > 0) {
 }
 
 // Build dynamic query with filters
-$query = "SELECT * FROM products WHERE 1=1";
+$query = "SELECT * FROM products WHERE is_active = 1";
 $params = [];
 $types = '';
 
@@ -1651,11 +1651,11 @@ $page_title = "Product Management";
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <strong>Related_To:</strong>
-                                        <p class="small mb-0">(For accessories only) Gaming, Business, Creative, Student, General Use</p>
+                                        <p class="small mb-0">(For accessories only) <?php echo implode(', ', $personas); ?></p>
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <strong>Use_Case:</strong>
-                                        <p class="small mb-0">Gaming, Business, Student, Creative, General</p>
+                                        <p class="small mb-0"><?php echo implode(', ', $personas); ?></p>
                                     </div>
                                 </div>
                                 

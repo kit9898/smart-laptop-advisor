@@ -36,6 +36,60 @@ $persona_perf_query = "SELECT
     ORDER BY total_ratings DESC";
 $persona_perf_result = mysqli_query($conn, $persona_perf_query);
 
+// Buffer Persona Data for Analysis & Display
+$persona_data = [];
+if ($persona_perf_result) {
+    while ($row = mysqli_fetch_assoc($persona_perf_result)) {
+        $persona_data[] = $row;
+    }
+}
+
+// Generate Insights
+$insights = [];
+
+// 1. Top Performing Persona
+if (!empty($persona_data)) {
+    // Already sorted by total_ratings DESC in query, let's find highest satisfaction
+    $top_persona = null;
+    $highest_score = -1;
+    
+    foreach ($persona_data as $p) {
+        if ($p['satisfaction_score'] > $highest_score && $p['total_ratings'] > 0) {
+            $highest_score = $p['satisfaction_score'];
+            $top_persona = $p;
+        }
+    }
+    
+    if ($top_persona) {
+        $insights[] = [
+            'type' => 'success',
+            'icon' => 'bi-trophy-fill',
+            'title' => 'Top Performer',
+            'text' => "<strong>{$top_persona['persona_name']}</strong> users have the highest satisfaction rate at <strong>" . round($top_persona['satisfaction_score']) . "%</strong>."
+        ];
+    }
+
+    // 2. Needs Attention (Lowest Satisfaction > 0 ratings)
+    $low_persona = null;
+    $lowest_score = 101;
+    
+    foreach ($persona_data as $p) {
+        if ($p['satisfaction_score'] < $lowest_score && $p['total_ratings'] > 0) {
+            $lowest_score = $p['satisfaction_score'];
+            $low_persona = $p;
+        }
+    }
+    
+    if ($low_persona && $low_persona !== $top_persona && $low_persona['satisfaction_score'] < 70) {
+        $insights[] = [
+            'type' => 'warning',
+            'icon' => 'bi-exclamation-triangle-fill',
+            'title' => 'Needs Attention',
+            'text' => "<strong>{$low_persona['persona_name']}</strong> users report lower satisfaction (<strong>" . round($low_persona['satisfaction_score']) . "%</strong>). Consider reviewing recommendations for this group."
+        ];
+    }
+}
+
 // Fetch performance trends (last 7 days)
 $trends_query = "SELECT 
     DATE(created_at) as log_date,
@@ -160,6 +214,8 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                         </div>
                     </div>
                 </div>
+
+
             </div>
         </div>
         <div class="col-xl-3 col-md-6 col-sm-6 col-12">
@@ -215,6 +271,36 @@ $top_products_result = mysqli_query($conn, $top_products_query);
         </div>
     </div>
 
+    <!-- Key Insights & Recommendations -->
+    <?php if (!empty($insights)): ?>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="bi bi-lightbulb-fill text-warning me-2"></i>Key Insights & Recommendations</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <?php foreach ($insights as $insight): ?>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-start p-3 border rounded">
+                                <div class="me-3">
+                                    <i class="bi <?php echo $insight['icon']; ?> fs-3 text-<?php echo $insight['type']; ?>"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-<?php echo $insight['type']; ?>"><?php echo $insight['title']; ?></h6>
+                                    <p class="mb-0 text-muted small"><?php echo $insight['text']; ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Performance Trends Chart -->
     <div class="row mb-4">
         <div class="col-12">
@@ -263,8 +349,8 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                             </thead>
                             <tbody>
                                 <?php 
-                                if ($persona_perf_result && mysqli_num_rows($persona_perf_result) > 0):
-                                    while ($persona = mysqli_fetch_assoc($persona_perf_result)):
+                                if (!empty($persona_data)):
+                                    foreach ($persona_data as $persona):
                                 ?>
                                 <tr>
                                     <td>
@@ -286,7 +372,7 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                                     </td>
                                 </tr>
                                 <?php 
-                                    endwhile;
+                                    endforeach;
                                 else:
                                 ?>
                                 <tr>

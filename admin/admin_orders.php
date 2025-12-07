@@ -115,6 +115,7 @@ $page_title = "Order Management";
     <link rel="stylesheet" href="source/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="source/assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="source/assets/css/app.css">
+    <link rel="stylesheet" href="source/assets/vendors/simple-datatables/style.css">
     <link rel="shortcut icon" href="source/assets/images/favicon.svg" type="image/x-icon">
 </head>
 
@@ -226,39 +227,35 @@ $page_title = "Order Management";
         </div>
     </div>
 
-    <!-- Filters and Actions -->
+    <!-- Action Bar -->
     <div class="row mb-4">
         <div class="col-md-8">
             <div class="d-flex gap-2 flex-wrap align-items-center">
-                <div class="input-group" style="max-width: 300px;">
-                    <input type="text" class="form-control" placeholder="Search orders..." id="searchInput">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
+                <!-- Status Filter -->
                 <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-funnel me-2"></i>Status
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-funnel me-2"></i>Status <?php if (!empty($status)): ?><span class="badge bg-primary"><?= ucfirst(htmlspecialchars($status)) ?></span><?php endif; ?>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('all')">All Orders</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('pending')">Pending</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('processing')">Processing</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('shipped')">Shipped</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('delivered')">Delivered</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('cancelled')">Cancelled</a></li>
+                        <li><a class="dropdown-item <?= empty($status) ? 'active' : '' ?>" href="admin_orders.php">All Orders</a></li>
+                        <li><a class="dropdown-item <?= $status === 'pending' ? 'active' : '' ?>" href="admin_orders.php?status=pending">Pending</a></li>
+                        <li><a class="dropdown-item <?= $status === 'processing' ? 'active' : '' ?>" href="admin_orders.php?status=processing">Processing</a></li>
+                        <li><a class="dropdown-item <?= $status === 'shipped' ? 'active' : '' ?>" href="admin_orders.php?status=shipped">Shipped</a></li>
+                        <li><a class="dropdown-item <?= $status === 'delivered' ? 'active' : '' ?>" href="admin_orders.php?status=delivered">Delivered</a></li>
+                        <li><a class="dropdown-item <?= $status === 'cancelled' ? 'active' : '' ?>" href="admin_orders.php?status=cancelled">Cancelled</a></li>
                     </ul>
                 </div>
-                <div class="input-group" style="max-width: 200px;">
-                    <input type="date" class="form-control form-control-sm" id="dateFrom">
-                    <span class="input-group-text">to</span>
-                    <input type="date" class="form-control form-control-sm" id="dateTo">
-                </div>
+
+                <?php if (!empty($status)): ?>
+                <a href="admin_orders.php" class="btn btn-outline-danger">
+                    <i class="bi bi-x-circle me-2"></i>Clear Filters
+                </a>
+                <?php endif; ?>
             </div>
         </div>
         <div class="col-md-4 text-md-end">
             <div class="d-flex gap-2 justify-content-md-end flex-wrap">
-                <button class="btn btn-outline-primary">
+                <button class="btn btn-outline-primary" onclick="exportCSV()">
                     <i class="bi bi-download me-2"></i>Export CSV
                 </button>
             </div>
@@ -401,9 +398,19 @@ $page_title = "Order Management";
     // Initialize DataTable
     let table1 = document.querySelector('#table1');
     let dataTable = new simpleDatatables.DataTable(table1, {
-        searchable: false, // We use custom search
-        fixedHeight: true,
-        perPage: 10
+        searchable: true,
+        fixedHeight: false,
+        perPage: 10,
+        perPageSelect: [5, 10, 25, 50, 100],
+        labels: {
+            placeholder: "Search orders...",
+            noRows: "No orders found",
+            info: "Showing {start} to {end} of {rows} entries"
+        },
+        layout: {
+            top: "{select}{search}",
+            bottom: "{info}{pager}"
+        }
     });
 
     // Filter Functions

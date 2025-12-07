@@ -4,8 +4,38 @@ require_once 'includes/db_connect.php';
 
 // Fetch Inventory (Products)
 // Fetch Inventory (Products)
-$query = "SELECT * FROM products ORDER BY product_id DESC";
-$result = $conn->query($query);
+// Build Query with Filters
+$where_clauses = ["is_active = 1"];
+$params = [];
+$types = "";
+
+$current_category = $_GET['category'] ?? '';
+$current_status = $_GET['status'] ?? '';
+
+if (!empty($current_category)) {
+    $where_clauses[] = "product_category = ?";
+    $params[] = $current_category;
+    $types .= "s";
+}
+
+// Logic for stock status filter
+if (!empty($current_status)) {
+    if ($current_status == 'in_stock') {
+        $where_clauses[] = "stock_quantity > min_stock_level";
+    } elseif ($current_status == 'low_stock') {
+        $where_clauses[] = "stock_quantity <= min_stock_level AND stock_quantity > 0";
+    } elseif ($current_status == 'out_of_stock') {
+        $where_clauses[] = "stock_quantity = 0";
+    }
+}
+
+$sql = "SELECT * FROM products WHERE " . implode(" AND ", $where_clauses) . " ORDER BY product_id DESC";
+$stmt = $conn->prepare($sql);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+$stmt->execute();
+$result = $stmt->get_result();
 $inventory = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -54,6 +84,7 @@ $page_title = "Inventory Management";
     <link rel="stylesheet" href="source/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="source/assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="source/assets/css/app.css">
+    <link rel="stylesheet" href="source/assets/vendors/simple-datatables/style.css">
     <link rel="shortcut icon" href="source/assets/images/favicon.svg" type="image/x-icon">
 </head>
 
@@ -180,45 +211,49 @@ $page_title = "Inventory Management";
         </div>
     </div>
 
-    <!-- Search and Filter -->
+    <!-- Action Bar -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, SKU, or brand..." onkeyup="filterTable()">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="categoryFilter" onchange="filterTable()">
-                                <option value="">All Categories</option>
-                                <?php
-                                $cat_query = "SELECT DISTINCT product_category FROM products WHERE product_category IS NOT NULL ORDER BY product_category";
-                                $cat_result = $conn->query($cat_query);
-                                if ($cat_result) {
-                                    while ($cat = $cat_result->fetch_assoc()) {
-                                        echo '<option value="' . htmlspecialchars($cat['product_category']) . '">' . ucfirst(htmlspecialchars($cat['product_category'])) . '</option>';
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="statusFilter" onchange="filterTable()">
-                                <option value="">All Stock Status</option>
-                                <option value="in_stock">In Stock</option>
-                                <option value="low_stock">Low Stock</option>
-                                <option value="out_of_stock">Out of Stock</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-secondary w-100" onclick="resetFilters()">Reset</button>
-                        </div>
-                    </div>
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <!-- Category Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-tag me-2"></i>Category <?php if ($current_category): ?><span class="badge bg-primary"><?= htmlspecialchars($current_category) ?></span><?php endif; ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item <?= empty($current_category) ? 'active' : '' ?>" href="admin_inventory.php<?= !empty($current_status) ? '?status=' . urlencode($current_status) : '' ?>">All Categories</a></li>
+                        <?php
+                        $cat_query = "SELECT DISTINCT product_category FROM products WHERE product_category IS NOT NULL ORDER BY product_category";
+                        $cat_result = $conn->query($cat_query);
+                        if ($cat_result):
+                            while ($cat = $cat_result->fetch_assoc()):
+                        ?>
+                            <li><a class="dropdown-item <?= $current_category === $cat['product_category'] ? 'active' : '' ?>" href="admin_inventory.php?category=<?= urlencode($cat['product_category']) ?><?= !empty($current_status) ? '&status=' . urlencode($current_status) : '' ?>"><?= htmlspecialchars(ucfirst($cat['product_category'])) ?></a></li>
+                        <?php 
+                            endwhile;
+                        endif;
+                        ?>
+                    </ul>
                 </div>
+
+                <!-- Stock Status Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-box-seam me-2"></i>Status <?php if ($current_status): ?><span class="badge bg-primary"><?= ucwords(str_replace('_', ' ', $current_status)) ?></span><?php endif; ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item <?= empty($current_status) ? 'active' : '' ?>" href="admin_inventory.php<?= !empty($current_category) ? '?category=' . urlencode($current_category) : '' ?>">All Statuses</a></li>
+                        <li><a class="dropdown-item <?= $current_status === 'in_stock' ? 'active' : '' ?>" href="admin_inventory.php?status=in_stock<?= !empty($current_category) ? '&category=' . urlencode($current_category) : '' ?>">In Stock</a></li>
+                        <li><a class="dropdown-item <?= $current_status === 'low_stock' ? 'active' : '' ?>" href="admin_inventory.php?status=low_stock<?= !empty($current_category) ? '&category=' . urlencode($current_category) : '' ?>">Low Stock</a></li>
+                        <li><a class="dropdown-item <?= $current_status === 'out_of_stock' ? 'active' : '' ?>" href="admin_inventory.php?status=out_of_stock<?= !empty($current_category) ? '&category=' . urlencode($current_category) : '' ?>">Out of Stock</a></li>
+                    </ul>
+                </div>
+
+                <?php if ($current_category || $current_status): ?>
+                <a href="admin_inventory.php" class="btn btn-outline-danger">
+                    <i class="bi bi-x-circle me-2"></i>Clear Filters
+                </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -437,9 +472,19 @@ $page_title = "Inventory Management";
     // Initialize DataTable
     let table1 = document.querySelector('#table1');
     let dataTable = new simpleDatatables.DataTable(table1, {
-        searchable: false, // We use custom search
-        fixedHeight: true,
-        perPage: 10
+        searchable: true,
+        fixedHeight: false,
+        perPage: 10,
+        perPageSelect: [5, 10, 25, 50, 100],
+        labels: {
+            placeholder: "Search products...",
+            noRows: "No entries found",
+            info: "Showing {start} to {end} of {rows} entries"
+        },
+        layout: {
+            top: "{select}{search}",
+            bottom: "{info}{pager}"
+        }
     });
 
     function filterTable() {

@@ -32,7 +32,7 @@ if ($step > $total_steps) {
                 (SELECT COUNT(*) FROM recommendation_ratings rr WHERE rr.product_id = p.product_id AND rr.rating = 1) as popularity_bonus
                 FROM products p 
                 LEFT JOIN recommendation_ratings r ON p.product_id = r.product_id AND r.user_id = ?
-                WHERE p.product_category != 'Laptop'
+                WHERE p.product_category != 'Laptop' AND p.is_active = 1
         ";
         
         $params = [$_SESSION['user_id']];
@@ -120,7 +120,7 @@ if ($step > $total_steps) {
 
                 FROM products p 
                 LEFT JOIN recommendation_ratings r ON p.product_id = r.product_id AND r.user_id = ?
-                WHERE 1=1
+                WHERE 1=1 AND p.is_active = 1
         ";
 
         // Params for the scoring logic

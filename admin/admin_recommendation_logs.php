@@ -11,7 +11,7 @@ require_once 'includes/db_connect.php';
 $persona_filter = isset($_GET['persona']) ? intval($_GET['persona']) : null;
 $rating_filter = isset($_GET['rating']) ? intval($_GET['rating']) : null; // 1 for Like, -1 for Dislike
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-d', strtotime('-10 years')); // Default to all-time (effectively)
-$date_to = isset($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d');
+$date_to = isset($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d', strtotime('+1 day'));
 $search_term = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 
 // Pagination

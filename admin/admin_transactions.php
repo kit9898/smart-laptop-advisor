@@ -175,6 +175,7 @@ while ($row = $result->fetch_assoc()) {
     <link rel="stylesheet" href="source/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="source/assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="source/assets/css/app.css">
+    <link rel="stylesheet" href="source/assets/vendors/simple-datatables/style.css">
     <link rel="shortcut icon" href="source/assets/images/favicon.svg" type="image/x-icon">
     <!-- Toastify -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -306,48 +307,55 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </div>
 
-    <!-- Filter Transactions -->
+    <!-- Action Bar -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form action="" method="GET" id="filterForm">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label">Date Range</label>
-                                <div class="input-group">
-                                    <input type="date" class="form-control" name="start_date" value="<?= $start_date ?>">
-                                    <span class="input-group-text">to</span>
-                                    <input type="date" class="form-control" name="end_date" value="<?= $end_date ?>">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Payment Method</label>
-                                <select class="form-select" name="payment_method">
-                                    <option value="">All Methods</option>
-                                    <option value="Credit Card" <?= $payment_method_filter == 'Credit Card' ? 'selected' : '' ?>>Credit Card</option>
-                                    <option value="PayPal" <?= $payment_method_filter == 'PayPal' ? 'selected' : '' ?>>PayPal</option>
-                                    <option value="Bank Transfer" <?= $payment_method_filter == 'Bank Transfer' ? 'selected' : '' ?>>Bank Transfer</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="">All Statuses</option>
-                                    <option value="completed" <?= $status_filter == 'completed' ? 'selected' : '' ?>>Completed</option>
-                                    <option value="pending" <?= $status_filter == 'pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="refunded" <?= $status_filter == 'refunded' ? 'selected' : '' ?>>Refunded</option>
-                                    <option value="failed" <?= $status_filter == 'failed' ? 'selected' : '' ?>>Failed</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="bi bi-filter me-2"></i>Filter Transactions
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+        <div class="col-md-8">
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <!-- Status Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-funnel me-2"></i>Status <?php if (!empty($status_filter)): ?><span class="badge bg-primary"><?= ucfirst(htmlspecialchars($status_filter)) ?></span><?php endif; ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item <?= empty($status_filter) ? 'active' : '' ?>" href="admin_transactions.php<?= !empty($payment_method_filter) ? '?payment_method=' . urlencode($payment_method_filter) : '' ?>">All Statuses</a></li>
+                        <li><a class="dropdown-item <?= $status_filter === 'completed' ? 'active' : '' ?>" href="admin_transactions.php?status=completed<?= !empty($payment_method_filter) ? '&payment_method=' . urlencode($payment_method_filter) : '' ?>">Completed</a></li>
+                        <li><a class="dropdown-item <?= $status_filter === 'pending' ? 'active' : '' ?>" href="admin_transactions.php?status=pending<?= !empty($payment_method_filter) ? '&payment_method=' . urlencode($payment_method_filter) : '' ?>">Pending</a></li>
+                        <li><a class="dropdown-item <?= $status_filter === 'refunded' ? 'active' : '' ?>" href="admin_transactions.php?status=refunded<?= !empty($payment_method_filter) ? '&payment_method=' . urlencode($payment_method_filter) : '' ?>">Refunded</a></li>
+                        <li><a class="dropdown-item <?= $status_filter === 'failed' ? 'active' : '' ?>" href="admin_transactions.php?status=failed<?= !empty($payment_method_filter) ? '&payment_method=' . urlencode($payment_method_filter) : '' ?>">Failed</a></li>
+                    </ul>
                 </div>
+
+                <!-- Payment Method Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-credit-card me-2"></i>Payment <?php if (!empty($payment_method_filter)): ?><span class="badge bg-primary"><?= htmlspecialchars($payment_method_filter) ?></span><?php endif; ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item <?= empty($payment_method_filter) ? 'active' : '' ?>" href="admin_transactions.php<?= !empty($status_filter) ? '?status=' . urlencode($status_filter) : '' ?>">All Methods</a></li>
+                        <li><a class="dropdown-item <?= $payment_method_filter === 'Credit Card' ? 'active' : '' ?>" href="admin_transactions.php?payment_method=Credit+Card<?= !empty($status_filter) ? '&status=' . urlencode($status_filter) : '' ?>">Credit Card</a></li>
+                        <li><a class="dropdown-item <?= $payment_method_filter === 'PayPal' ? 'active' : '' ?>" href="admin_transactions.php?payment_method=PayPal<?= !empty($status_filter) ? '&status=' . urlencode($status_filter) : '' ?>">PayPal</a></li>
+                        <li><a class="dropdown-item <?= $payment_method_filter === 'Bank Transfer' ? 'active' : '' ?>" href="admin_transactions.php?payment_method=Bank+Transfer<?= !empty($status_filter) ? '&status=' . urlencode($status_filter) : '' ?>">Bank Transfer</a></li>
+                    </ul>
+                </div>
+
+                <?php if (!empty($status_filter) || !empty($payment_method_filter)): ?>
+                <a href="admin_transactions.php" class="btn btn-outline-danger">
+                    <i class="bi bi-x-circle me-2"></i>Clear Filters
+                </a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                <button class="btn btn-primary" onclick="exportReport()">
+                    <i class="bi bi-download me-2"></i>Export
+                </button>
+                <button class="btn btn-outline-secondary" onclick="printStatement()">
+                    <i class="bi bi-printer"></i>
+                </button>
+                <a href="?flagged=1" class="btn btn-outline-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -485,8 +493,18 @@ while ($row = $result->fetch_assoc()) {
     let table1 = document.querySelector('#table1');
     let dataTable = new simpleDatatables.DataTable(table1, {
         searchable: true,
-        fixedHeight: true,
-        perPage: 10
+        fixedHeight: false,
+        perPage: 10,
+        perPageSelect: [5, 10, 25, 50, 100],
+        labels: {
+            placeholder: "Search transactions...",
+            noRows: "No transactions found",
+            info: "Showing {start} to {end} of {rows} entries"
+        },
+        layout: {
+            top: "{select}{search}",
+            bottom: "{info}{pager}"
+        }
     });
 
     function showToast(msg, type = 'success') {

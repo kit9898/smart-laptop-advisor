@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id']) && isset
     if ($rating == 1 || $rating == -1) {
         // "INSERT ... ON DUPLICATE KEY UPDATE" is perfect for this.
         // It will insert a new rating, or update the existing one if the user changes their mind.
+        // We also update created_at = NOW() so re-ratings appear at the top of the logs.
         $sql = "INSERT INTO recommendation_ratings (user_id, product_id, rating) VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE rating = ?";
+                ON DUPLICATE KEY UPDATE rating = ?, created_at = NOW()";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iiii", $user_id, $product_id, $rating, $rating);
         $stmt->execute();

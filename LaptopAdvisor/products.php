@@ -48,7 +48,7 @@ if ($view == 'browse') {
     $min_ram_filter = trim($_GET['min_ram'] ?? '');
     $sort_filter = trim($_GET['sort'] ?? 'price_asc');
     
-    $sql = "SELECT * FROM products";
+    $sql = "SELECT * FROM products WHERE is_active = 1";
     $where_clauses = []; 
     $params = []; 
     $types = '';
