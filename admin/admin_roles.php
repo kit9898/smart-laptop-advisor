@@ -344,7 +344,7 @@ while ($row = mysqli_fetch_assoc($role_perms_result)) {
                                                                 <i class="bi bi-pencil"></i>
                                                             </button>
                                                             <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                                    onclick="deleteRole(<?php echo $role['role_id']; ?>)"
+                                                                    onclick="deleteRole(<?php echo $role['role_id']; ?>, this)"
                                                                     title="Delete">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -489,27 +489,167 @@ while ($row = mysqli_fetch_assoc($role_perms_result)) {
         </div>
     </div>
 
-    <!-- JavaScript Files -->
-    <script src="source/assets/js/bootstrap.js"></script>
-    <script src="source/assets/js/app.js"></script>
+    <!-- Edit Role Modal -->
+    <div class="modal fade" id="editRoleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editRoleForm" method="POST" action="ajax/edit_role.php">
+                    <input type="hidden" name="role_id" id="edit_role_id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Role Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="role_name" id="edit_role_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role Code</label>
+                            <input type="text" class="form-control" name="role_code" id="edit_role_code" readonly disabled>
+                            <small class="text-muted">Role code cannot be changed.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" id="edit_description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status" id="edit_role_status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
     <script>
         function viewRoleDetails(roleId) {
-            alert('View role details: ' + roleId);
-            // Implement view functionality
+           // Reuse edit modal
+           editRole(roleId);
         }
 
         function editRole(roleId) {
-            alert('Edit role: ' + roleId);
-            // Implement edit functionality
+            fetch(`ajax/get_role.php?id=${roleId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const role = data.data;
+                        document.getElementById('edit_role_id').value = role.role_id;
+                        document.getElementById('edit_role_name').value = role.role_name;
+                        document.getElementById('edit_role_code').value = role.role_code;
+                        document.getElementById('edit_description').value = role.description;
+                        document.getElementById('edit_role_status').value = role.status;
+                        
+                        const modal = new bootstrap.Modal(document.getElementById('editRoleModal'));
+                        modal.show();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to fetch role details');
+                });
         }
 
-        function deleteRole(roleId) {
-            if (confirm('Are you sure you want to delete this role? Users assigned to this role will need to be reassigned.')) {
-                // Implement delete functionality
-                alert('Role deleted successfully!');
+        function deleteRole(roleId, btn) {
+            if (confirm('Are you sure you want to delete this role? Users assigned to this role will need to be reassigned. This action cannot be undone.')) {
+                
+                let originalContent = '';
+                if (btn) {
+                    btn.disabled = true;
+                    originalContent = btn.innerHTML;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                }
+
+                fetch('ajax/delete_role.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ role_id: roleId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Role deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = originalContent;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                    }
+                });
             }
         }
+        
+        // Add Role Form
+        document.getElementById('addRoleForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('ajax/add_role.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Role added successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+        
+        // Edit Role Form
+        document.getElementById('editRoleForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('ajax/edit_role.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Role updated successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
 
         function togglePermission(roleId, permissionId, currentAccess) {
             // Cycle through access levels: none -> read -> write -> full -> none
@@ -532,32 +672,41 @@ while ($row = mysqli_fetch_assoc($role_perms_result)) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update UI
-                    const cell = event.currentTarget;
-                    cell.setAttribute('data-access', nextLevel);
-                    cell.setAttribute('title', nextLevel.charAt(0).toUpperCase() + nextLevel.slice(1));
+                    // Find the cell - since we passed in args, we look for the element in the DOM
+                    // Using attribute selectors to find specific cell
+                    const cell = document.querySelector(`.permission-cell[data-role="${roleId}"][data-permission="${permissionId}"]`);
                     
-                    // Update icon
-                    let icon = '';
-                    switch (nextLevel) {
-                        case 'full':
-                            icon = '<i class="bi bi-check-circle-fill access-full"></i>';
-                            break;
-                        case 'write':
-                            icon = '<i class="bi bi-pencil-fill access-write"></i>';
-                            break;
-                        case 'read':
-                            icon = '<i class="bi bi-eye-fill access-read"></i>';
-                            break;
-                        default:
-                            icon = '<i class="bi bi-x-circle access-none"></i>';
+                    if (cell) {
+                        // Update attributes
+                        cell.setAttribute('data-access', nextLevel);
+                        cell.setAttribute('title', nextLevel.charAt(0).toUpperCase() + nextLevel.slice(1));
+                        
+                        // Update click handler to use new currentAccess
+                        cell.setAttribute('onclick', `togglePermission(${roleId}, ${permissionId}, '${nextLevel}')`);
+                        
+                        // Update icon
+                        let icon = '';
+                        switch (nextLevel) {
+                            case 'full':
+                                icon = '<i class="bi bi-check-circle-fill access-full"></i>';
+                                break;
+                            case 'write':
+                                icon = '<i class="bi bi-pencil-fill access-write"></i>';
+                                break;
+                            case 'read':
+                                icon = '<i class="bi bi-eye-fill access-read"></i>';
+                                break;
+                            default:
+                                icon = '<i class="bi bi-x-circle access-none"></i>';
+                        }
+                        cell.innerHTML = icon;
                     }
-                    cell.innerHTML = icon;
                 } else {
                     alert('Error updating permission: ' + data.message);
                 }
             })
             .catch(error => {
+                console.error('Error:', error);
                 alert('An error occurred. Please try again.');
             });
         }
