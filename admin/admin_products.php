@@ -546,6 +546,16 @@ while ($row = $categories_result->fetch_assoc()) {
     $categories[] = $row['primary_use_case'];
 }
 
+// Fetch Personas for Dropdowns
+$persona_query = "SELECT * FROM personas ORDER BY name ASC";
+$persona_result = $conn->query($persona_query);
+$personas = [];
+if ($persona_result->num_rows > 0) {
+    while ($p = $persona_result->fetch_assoc()) {
+        $personas[] = $p['name'];
+    }
+}
+
 // Build dynamic query with filters
 $query = "SELECT * FROM products WHERE 1=1";
 $params = [];
@@ -1332,117 +1342,115 @@ $page_title = "Product Management";
                                 <small class="text-muted">Choose whether this is a laptop or an accessory</small>
                             </div>
                             
-                            <div class="form-group mb-3" id="relatedCategoryGroup" style="display: none;">
-                                <label for="relatedCategory">Related To (For Accessories)</label>
-                                <select class="form-select" id="relatedCategory" name="related_to_category">
-                                    <option value="">Select Category</option>
-                                    <option value="Gaming">Gaming</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Creative">Creative</option>
-                                    <option value="Student">Student</option>
-                                    <option value="General Use">General Use</option>
-                                </select>
-                                <small class="text-muted">What type of users is this accessory designed for?</small>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="productCategory">Use Case / Target Audience</label>
-                                <select class="form-select" id="productCategory" name="category">
-                                    <option value="">Select Use Case</option>
-                                    <option value="Gaming">Gaming</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Student">Student</option>
-                                    <option value="Creative">Creative</option>
-                                    <option value="General">General</option>
-                                </select>
-                                <small class="text-muted">Primary use case or target audience</small>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="price">Price ($) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="price" name="price" placeholder="1299.99" step="0.01" min="0" required>
-                            </div>
-                            
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productCpu">CPU / Processor</label>
-                                <input type="text" class="form-control" id="productCpu" name="cpu" placeholder="e.g., Intel Core i7-13700H">
-                            </div>
-                            
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productGpu">GPU / Graphics Card</label>
-                                <input type="text" class="form-control" id="productGpu" name="gpu" placeholder="e.g., NVIDIA RTX 4060">
-                            </div>
-                        </div>
-                        
-                        <!-- Right Column -->
-                        <div class="col-md-6">
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productRam">RAM (GB)</label>
-                                <input type="number" class="form-control" id="productRam" name="ram" placeholder="16" min="1" max="128">
-                                <small class="text-muted">Enter RAM capacity in gigabytes</small>
-                            </div>
-                            
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productStorage">Storage Capacity (GB)</label>
-                                <input type="number" class="form-control" id="productStorage" name="storage" placeholder="512" min="1" max="8192">
-                                <small class="text-muted">Enter storage size in gigabytes</small>
-                            </div>
-                            
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productStorageType">Storage Type</label>
-                                <select class="form-select" id="productStorageType" name="storage_type">
-                                    <option value="SSD" selected>SSD (Solid State Drive)</option>
-                                    <option value="HDD">HDD (Hard Disk Drive)</option>
-                                    <option value="Hybrid">Hybrid (SSD + HDD)</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productDisplay">Display Size (inches)</label>
-                                <input type="number" class="form-control" id="productDisplay" name="display" placeholder="15.6" step="0.1" min="10" max="20">
-                            </div>
+                                    <div class="form-group mb-3" id="relatedCategoryGroup" style="display: none;">
+                                        <label for="relatedCategory">Related To (For Accessories)</label>
+                                        <select class="form-select" id="relatedCategory" name="related_to_category">
+                                            <option value="">Select Category</option>
+                                            <?php foreach ($personas as $persona): ?>
+                                            <option value="<?= htmlspecialchars($persona) ?>"><?= htmlspecialchars($persona) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="text-muted">What type of users is this accessory designed for?</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label for="productCategory">Use Case / Target Audience</label>
+                                        <select class="form-select" id="productCategory" name="category" required>
+                                            <option value="">Select Use Case</option>
+                                            <?php foreach ($personas as $persona): ?>
+                                            <option value="<?= htmlspecialchars($persona) ?>"><?= htmlspecialchars($persona) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="text-muted">Primary use case or target audience</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label for="price">Price ($) <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="price" name="price" placeholder="1299.99" step="0.01" min="0" required>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productCpu">CPU / Processor</label>
+                                        <input type="text" class="form-control" id="productCpu" name="cpu" placeholder="e.g., Intel Core i7-13700H">
+                                    </div>
+                                    
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productGpu">GPU / Graphics Card</label>
+                                        <input type="text" class="form-control" id="productGpu" name="gpu" placeholder="e.g., NVIDIA RTX 4060">
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Column -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productRam">RAM (GB)</label>
+                                        <input type="number" class="form-control" id="productRam" name="ram" placeholder="16" min="1" max="128">
+                                        <small class="text-muted">Enter RAM capacity in gigabytes</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productStorage">Storage Capacity (GB)</label>
+                                        <input type="number" class="form-control" id="productStorage" name="storage" placeholder="512" min="1" max="8192">
+                                        <small class="text-muted">Enter storage size in gigabytes</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productStorageType">Storage Type</label>
+                                        <select class="form-select" id="productStorageType" name="storage_type">
+                                            <option value="SSD" selected>SSD (Solid State Drive)</option>
+                                            <option value="HDD">HDD (Hard Disk Drive)</option>
+                                            <option value="Hybrid">Hybrid (SSD + HDD)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productDisplay">Display Size (inches)</label>
+                                        <input type="number" class="form-control" id="productDisplay" name="display" placeholder="15.6" step="0.1" min="10" max="20">
+                                    </div>
 
-                            <div class="form-group mb-3 laptop-only-field">
-                                <label for="productBattery">🔋 Battery Life</label>
-                                <input type="text" class="form-control" id="productBattery" name="battery_life" placeholder="e.g., Up to 10 hours">
+                                    <div class="form-group mb-3 laptop-only-field">
+                                        <label for="productBattery">🔋 Battery Life</label>
+                                        <input type="text" class="form-control" id="productBattery" name="battery_life" placeholder="e.g., Up to 10 hours">
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label for="image">Primary Product Image</label>
+                                        <input type="file" class="form-control" id="image" name="product_image" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                        <small class="text-muted">Accepted formats: JPG, PNG, WEBP (Max 5MB)</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label>Additional Product Images (Optional)</label>
+                                        <input type="file" class="form-control" id="additionalImages" name="additional_images[]" multiple accept="image/png,image/jpeg,image/jpg,image/webp" onchange="previewAdditionalImages(this)">
+                                        <small class="text-muted">Upload multiple images (Max 5MB each)</small>
+                                        <div id="imagePreviewContainer" class="row g-2 mt-2"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Full Width Description -->
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label for="productDescription">Product Description</label>
+                                        <textarea class="form-control" id="productDescription" name="description" rows="3" placeholder="Enter detailed product information, features, and specifications..."></textarea>
+                                    </div>
+                                    
+                                    <!-- Video URL Section -->
+                                    <div class="form-group mb-3">
+                                        <label for="productVideoUrl">Product Video URL (Optional)</label>
+                                        <input type="url" class="form-control" id="productVideoUrl" name="video_url" placeholder="https://youtube.com/watch?v=... or direct video link">
+                                        <small class="text-muted">YouTube, Vimeo, or direct video URL</small>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="image">Primary Product Image</label>
-                                <input type="file" class="form-control" id="image" name="product_image" accept="image/png,image/jpeg,image/jpg,image/webp">
-                                <small class="text-muted">Accepted formats: JPG, PNG, WEBP (Max 5MB)</small>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label>Additional Product Images (Optional)</label>
-                                <input type="file" class="form-control" id="additionalImages" name="additional_images[]" multiple accept="image/png,image/jpeg,image/jpg,image/webp" onchange="previewAdditionalImages(this)">
-                                <small class="text-muted">Upload multiple images (Max 5MB each)</small>
-                                <div id="imagePreviewContainer" class="row g-2 mt-2"></div>
-                            </div>
-                        </div>
                         
-                        <!-- Full Width Description -->
-                        <div class="col-12">
-                            <div class="form-group mb-3">
-                                <label for="productDescription">Product Description</label>
-                                <textarea class="form-control" id="productDescription" name="description" rows="3" placeholder="Enter detailed product information, features, and specifications..."></textarea>
-                            </div>
-                            
-                            <!-- Video URL Section -->
-                            <div class="form-group mb-3">
-                                <label for="productVideoUrl">Product Video URL (Optional)</label>
-                                <input type="url" class="form-control" id="productVideoUrl" name="video_url" placeholder="https://youtube.com/watch?v=... or direct video link">
-                                <small class="text-muted">YouTube, Vimeo, or direct video URL</small>
-                            </div>
-                        </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="addProductForm" class="btn btn-primary">
-                    <i class="bi bi-save me-2"></i>Save Product
-                </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" form="addProductForm" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Save Product
+                        </button>
+                    </div>
+                </form> <!-- Correctly close form here -->
             </div>
         </div>
     </div>
@@ -1496,24 +1504,20 @@ $page_title = "Product Management";
                                 <label for="editRelatedCategory">Related To (For Accessories)</label>
                                 <select class="form-select" id="editRelatedCategory" name="related_to_category">
                                     <option value="">Select Category</option>
-                                    <option value="Gaming">Gaming</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Creative">Creative</option>
-                                    <option value="Student">Student</option>
-                                    <option value="General Use">General Use</option>
+                                    <?php foreach ($personas as $persona): ?>
+                                    <option value="<?= htmlspecialchars($persona) ?>"><?= htmlspecialchars($persona) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                                 <small class="text-muted">What type of users is this accessory designed for?</small>
                             </div>
                             
                             <div class="form-group mb-3">
                                 <label for="editProductCategory">Use Case / Target Audience</label>
-                                <select class="form-select" id="editProductCategory" name="category">
+                                <select class="form-select" id="editProductCategory" name="category" required>
                                     <option value="">Select Use Case</option>
-                                    <option value="Gaming">Gaming</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Student">Student</option>
-                                    <option value="Creative">Creative</option>
-                                    <option value="General">General</option>
+                                    <?php foreach ($personas as $persona): ?>
+                                    <option value="<?= htmlspecialchars($persona) ?>"><?= htmlspecialchars($persona) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                                 <small class="text-muted">Primary use case or target audience</small>
                             </div>
@@ -1598,8 +1602,6 @@ $page_title = "Product Management";
                                 <input type="url" class="form-control" id="editProductVideoUrl" name="video_url" placeholder="https://youtube.com/watch?v=... or direct video link">
                                 <small class="text-muted">YouTube, Vimeo, or direct video URL</small>
                             </div>
-
-
                         </div>
                     </div>
                 </form>
