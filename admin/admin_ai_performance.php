@@ -52,7 +52,7 @@ $trend_satisfaction = [];
 $trend_volume = [];
 
 while ($row = mysqli_fetch_assoc($trends_result)) {
-    $trend_dates[] = $row['log_date'];
+    $trend_dates[] = date('M d', strtotime($row['log_date']));
     $trend_satisfaction[] = round($row['daily_satisfaction'], 1);
     $trend_volume[] = $row['total_ratings'];
 }
@@ -135,108 +135,110 @@ $top_products_result = mysqli_query($conn, $top_products_query);
         </div>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="row">
-        <div class="col-6 col-lg-3 col-md-6">
+    <!-- KPI Cards (Matched with Conversation Logs style) -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 col-sm-6 col-12">
             <div class="card">
-                <div class="card-body px-3 py-4-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stats-icon purple">
-                                <i class="iconly-boldHeart"></i>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="align-self-center">
+                                <i class="bi bi-heart-fill text-primary font-large-2 float-left"></i>
                             </div>
-                        </div>
-                        <div class="col-md-8">
-                            <h6 class="text-muted font-semibold">Satisfaction Score</h6>
-                            <h6 class="font-extrabold mb-0"><?php echo round($satisfaction_score, 1); ?>%</h6>
+                            <div class="media-body text-right">
+                                <h3 class="primary"><?php echo round($satisfaction_score, 1); ?>%</h3>
+                                <span>Satisfaction Score</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 col-lg-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-sm-6 col-12">
             <div class="card">
-                <div class="card-body px-3 py-4-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stats-icon blue">
-                                <i class="iconly-boldChat"></i>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="align-self-center">
+                                <i class="bi bi-chat-text-fill text-info font-large-2 float-left"></i>
                             </div>
-                        </div>
-                        <div class="col-md-8">
-                            <h6 class="text-muted font-semibold">Total Feedback</h6>
-                            <h6 class="font-extrabold mb-0"><?php echo $kpis['total_ratings']; ?></h6>
+                            <div class="media-body text-right">
+                                <h3 class="info"><?php echo number_format($kpis['total_ratings']); ?></h3>
+                                <span>Total Feedback</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 col-lg-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-sm-6 col-12">
             <div class="card">
-                <div class="card-body px-3 py-4-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stats-icon green">
-                                <i class="iconly-boldTick-Square"></i>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="align-self-center">
+                                <i class="bi bi-hand-thumbs-up-fill text-success font-large-2 float-left"></i>
                             </div>
-                        </div>
-                        <div class="col-md-8">
-                            <h6 class="text-muted font-semibold">Total Likes</h6>
-                            <h6 class="font-extrabold mb-0"><?php echo $kpis['total_likes']; ?></h6>
+                            <div class="media-body text-right">
+                                <h3 class="success"><?php echo number_format($kpis['total_likes']); ?></h3>
+                                <span>Total Likes</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 col-lg-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-sm-6 col-12">
             <div class="card">
-                <div class="card-body px-3 py-4-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stats-icon red">
-                                <i class="iconly-boldClose-Square"></i>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="align-self-center">
+                                <i class="bi bi-hand-thumbs-down-fill text-danger font-large-2 float-left"></i>
                             </div>
-                        </div>
-                        <div class="col-md-8">
-                            <h6 class="text-muted font-semibold">Total Dislikes</h6>
-                            <h6 class="font-extrabold mb-0"><?php echo $kpis['total_dislikes']; ?></h6>
+                            <div class="media-body text-right">
+                                <h3 class="danger"><?php echo number_format($kpis['total_dislikes']); ?></h3>
+                                <span>Total Dislikes</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="page-content">
     <!-- Performance Trends Chart -->
-    <section class="row">
+    <div class="row mb-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h4>Satisfaction Trends (Last 7 Days)</h4>
                 </div>
                 <div class="card-body">
-                    <div id="performanceTrendsChart"></div>
+                    <div style="height: 350px;">
+                        <canvas id="performanceTrendsChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Rating Distribution & Performance by Persona -->
-    <section class="row">
-        <div class="col-12 col-lg-6">
-            <div class="card">
+    <div class="row mb-4">
+        <div class="col-12 col-lg-5">
+            <div class="card h-100">
                 <div class="card-header">
                     <h4>Feedback Distribution</h4>
                 </div>
                 <div class="card-body">
-                    <div id="confidenceDistributionChart"></div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="confidenceDistributionChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-lg-6">
-            <div class="card">
+        <div class="col-12 col-lg-7">
+            <div class="card h-100">
                 <div class="card-header">
                     <h4>Performance by Persona</h4>
                 </div>
@@ -255,24 +257,23 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                                 <?php 
                                 if ($persona_perf_result && mysqli_num_rows($persona_perf_result) > 0):
                                     while ($persona = mysqli_fetch_assoc($persona_perf_result)):
-                                        // Skip if no ratings and we want to keep the table clean, 
-                                        // or show 0s. Let's show 0s but maybe filter out completely empty ones if needed.
-                                        // For now, showing all personas is good for visibility.
                                 ?>
                                 <tr>
                                     <td>
-                                        <span class="badge bg-light-<?php echo $persona['color_theme']; ?>">
+                                        <span class="badge bg-light-<?php echo $persona['color_theme'] ?? 'secondary'; ?>">
                                             <?php echo htmlspecialchars($persona['persona_name']); ?>
                                         </span>
                                     </td>
                                     <td><?php echo number_format($persona['total_ratings']); ?></td>
                                     <td><?php echo number_format($persona['total_likes']); ?></td>
                                     <td>
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-<?php echo $persona['satisfaction_score'] >= 70 ? 'success' : ($persona['satisfaction_score'] >= 40 ? 'warning' : 'danger'); ?>" 
-                                                 style="width: <?php echo round($persona['satisfaction_score']); ?>%">
-                                                <?php echo round($persona['satisfaction_score'], 1); ?>%
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height: 8px; width: 100px;">
+                                                <div class="progress-bar bg-<?php echo $persona['satisfaction_score'] >= 70 ? 'success' : ($persona['satisfaction_score'] >= 40 ? 'warning' : 'danger'); ?>" 
+                                                     style="width: <?php echo round($persona['satisfaction_score']); ?>%">
+                                                </div>
                                             </div>
+                                            <span class="text-sm font-bold"><?php echo round($persona['satisfaction_score']); ?>%</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -290,19 +291,19 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Top Rated Products -->
-    <section class="row">
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h4>Top Rated Recommended Products</h4>
-                    <p class="text-muted mb-0">Products with the most positive user feedback</p>
+                    <p class="text-subtitle text-muted mb-0">Products with the most positive user feedback</p>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Product Name</th>
@@ -318,7 +319,7 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                                         $approval_rate = ($prod['likes'] / $prod['rating_count']) * 100;
                                 ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($prod['product_name']); ?></td>
+                                    <td style="font-weight: 600;"><?php echo htmlspecialchars($prod['product_name']); ?></td>
                                     <td><?php echo $prod['rating_count']; ?></td>
                                     <td><?php echo $prod['likes']; ?></td>
                                     <td>
@@ -330,7 +331,7 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                                 else:
                                 ?>
                                 <tr>
-                                    <td colspan="4" class="text-center">No ratings recorded yet.</td>
+                                    <td colspan="4" class="text-center p-4">No ratings recorded yet.</td>
                                 </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -339,106 +340,134 @@ $top_products_result = mysqli_query($conn, $top_products_query);
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Optimization Recommendations -->
-    <section class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>System Insights</h4>
-                </div>
-                <div class="card-body">
-                    <?php if ($satisfaction_score < 70): ?>
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        <strong>Attention Needed:</strong> Overall user satisfaction is below 70%. Consider adjusting persona weightages.
-                    </div>
-                    <?php else: ?>
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <strong>Good Performance:</strong> User satisfaction is healthy (>70%).
-                    </div>
-                    <?php endif; ?>
-                    
-                    <div class="alert alert-info">
-                        <i class="bi bi-lightbulb me-2"></i>
-                        <strong>Insight:</strong> You have received <?php echo $kpis['total_ratings']; ?> user ratings in the last 30 days.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Performance Trends Chart
-    const trendChartOptions = {
-        series: [{
-            name: 'Satisfaction Score (%)',
-            data: <?php echo json_encode($trend_satisfaction); ?>
+    // Common Chart Options
+    Chart.defaults.font.family = "'Nunito', sans-serif";
+    Chart.defaults.color = '#6b7280';
+    
+    // Performance Trends Chart (Line)
+    const trendCtx = document.getElementById('performanceTrendsChart').getContext('2d');
+    const trendData = {
+        labels: <?php echo json_encode($trend_dates); ?>,
+        datasets: [{
+            label: 'Satisfaction (%)',
+            data: <?php echo json_encode($trend_satisfaction); ?>,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#4f46e5',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            yAxisID: 'y'
         }, {
-            name: 'Feedback Volume',
-            data: <?php echo json_encode($trend_volume); ?>
-        }],
-        chart: {
-            type: 'line',
-            height: 350
-        },
-        xaxis: {
-            categories: <?php echo json_encode($trend_dates); ?>
-        },
-        yaxis: [{
-            title: {
-                text: 'Satisfaction (%)'
-            },
-            max: 100
-        }, {
-            opposite: true,
-            title: {
-                text: 'Volume'
-            }
-        }],
-        stroke: {
-            width: [3, 2],
-            curve: 'smooth',
-            dashArray: [0, 5]
-        },
-        colors: ['#435ebe', '#9694ff']
+            label: 'Feedback Volume',
+            data: <?php echo json_encode($trend_volume); ?>,
+            borderColor: '#9ca3af',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false,
+            tension: 0.4,
+            yAxisID: 'y1'
+        }]
     };
-    const trendChart = new ApexCharts(document.querySelector("#performanceTrendsChart"), trendChartOptions);
-    trendChart.render();
 
-    // Confidence Distribution Chart (Now Feedback Distribution)
-    const confidenceChartOptions = {
-        series: <?php echo json_encode($dist_values); ?>,
-        chart: {
-            type: 'donut',
-            height: 350
-        },
-        labels: <?php echo json_encode($dist_labels); ?>,
-        colors: ['#28a745', '#dc3545'], // Green for Likes, Red for Dislikes
-        plotOptions: {
-            pie: {
-                donut: {
+    new Chart(trendCtx, {
+        type: 'line',
+        data: trendData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
                     labels: {
-                        show: true,
-                        total: {
-                            show: true,
-                            label: 'Total',
-                            formatter: function (w) {
-                                return w.globals.seriesTotals.reduce((a, b) => {
-                                    return a + b
-                                }, 0)
-                            }
-                        }
+                        usePointStyle: true,
+                        boxWidth: 8
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    min: 0,
+                    max: 100,
+                    grid: {
+                        color: '#f3f4f6',
+                        borderDash: [4, 4]
+                    },
+                    title: {
+                        display: true,
+                        text: 'Satisfaction Rating'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Volume'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
                     }
                 }
             }
         }
-    };
-    const confidenceChart = new ApexCharts(document.querySelector("#confidenceDistributionChart"), confidenceChartOptions);
-    confidenceChart.render();
+    });
+
+    // Feedback Distribution Chart (Doughnut)
+    const distCtx = document.getElementById('confidenceDistributionChart').getContext('2d');
+    new Chart(distCtx, {
+        type: 'doughnut',
+        data: {
+            labels: <?php echo json_encode($dist_labels); ?>,
+            datasets: [{
+                data: <?php echo json_encode($dist_values); ?>,
+                backgroundColor: [
+                    '#10b981', // Likes - Emerald
+                    '#ef4444'  // Dislikes - Red
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
 </script>
 
 <?php

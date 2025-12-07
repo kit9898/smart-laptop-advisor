@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="card-body">
                         <div class="media d-flex">
                             <div class="align-self-center">
-                                <i class="bi bi-person-badge text-primary font-large-2 float-left"></i>
+                                <i class="bi bi-person-badge-fill text-primary font-large-2 float-left"></i>
                             </div>
                             <div class="media-body text-right">
                                 <h3 class="primary"><?php echo $total_personas; ?></h3>
@@ -176,11 +176,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="card-body">
                         <div class="media d-flex">
                             <div class="align-self-center">
-                                <i class="bi bi-check-circle text-success font-large-2 float-left"></i>
+                                <i class="bi bi-check-circle-fill text-success font-large-2 float-left"></i>
                             </div>
                             <div class="media-body text-right">
                                 <h3 class="success"><?php echo $active_personas; ?></h3>
-                                <span>Active</span>
+                                <span>Active Personas</span>
                             </div>
                         </div>
                     </div>
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="card-body">
                         <div class="media d-flex">
                             <div class="align-self-center">
-                                <i class="bi bi-chat-text text-info font-large-2 float-left"></i>
+                                <i class="bi bi-chat-text-fill text-info font-large-2 float-left"></i>
                             </div>
                             <div class="media-body text-right">
                                 <h3 class="info"><?php echo number_format($total_feedback); ?></h3>
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="card-body">
                         <div class="media d-flex">
                             <div class="align-self-center">
-                                <i class="bi bi-heart text-warning font-large-2 float-left"></i>
+                                <i class="bi bi-heart-fill text-warning font-large-2 float-left"></i>
                             </div>
                             <div class="media-body text-right">
                                 <h3 class="warning"><?php echo round($avg_satisfaction, 1); ?>%</h3>
@@ -226,12 +226,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Action Bar -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="d-flex gap-2 flex-wrap align-items-center">
-                <div class="input-group" style="max-width: 300px;">
-                    <input type="text" class="form-control" placeholder="Search personas..." id="searchInput">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
-                    </button>
+            <div class="d-flex gap-3 flex-wrap align-items-center">
+                <div class="input-group" style="max-width: 320px;">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control ps-0" placeholder="Search personas..." id="searchInput">
                 </div>
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -246,49 +244,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
         <div class="col-md-4 text-md-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPersonaModal">
-                <i class="bi bi-plus-circle me-2"></i>Create New Persona
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPersonaModal">
+                <i class="bi bi-plus-lg me-2"></i>Create New Persona
             </button>
         </div>
     </div>
-</div>
 
-<div class="page-content">
     <!-- Personas Grid -->
-    <section class="section">
-        <div class="row" id="personasGrid">
-            <?php 
-            if ($personas_result && mysqli_num_rows($personas_result) > 0):
-                while ($persona = mysqli_fetch_assoc($personas_result)):
-                    $priorities = explode(',', $persona['key_priorities']);
-                    $status_class = $persona['is_active'] ? 'success' : 'secondary';
-                    $status_text = $persona['is_active'] ? 'Active' : 'Inactive';
-                    $satisfaction = $persona['persona_accuracy'] ?? 0;
-            ?>
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4" data-status="<?php echo $status_text; ?>">
-                <div class="card">
-                    <div class="card-body">
+    <div class="row" id="personasGrid">
+        <?php 
+        if ($personas_result && mysqli_num_rows($personas_result) > 0):
+            while ($persona = mysqli_fetch_assoc($personas_result)):
+                $priorities = explode(',', $persona['key_priorities']);
+                $status_class = $persona['is_active'] ? 'success' : 'secondary';
+                $status_text = $persona['is_active'] ? 'Active' : 'Inactive';
+                $satisfaction = $persona['persona_accuracy'] ?? 0;
+                $color_theme = $persona['color_theme'] ?: 'primary';
+        ?>
+        <div class="col-xl-4 col-md-6 col-sm-12 mb-4" data-status="<?php echo $status_text; ?>">
+            <div class="card h-100">
+                <div class="card-content">
+                    <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="d-flex align-items-center">
-                                <div class="avatar bg-<?php echo htmlspecialchars($persona['color_theme']); ?> me-3">
-                                    <span class="avatar-content">
-                                        <i class="<?php echo htmlspecialchars($persona['icon_class']); ?> text-white"></i>
-                                    </span>
+                                <div class="avatar avatar-lg me-3 bg-light-<?php echo $color_theme; ?> text-<?php echo $color_theme; ?>">
+                                    <span class="avatar-content"><i class="<?php echo htmlspecialchars($persona['icon_class']); ?>"></i></span>
                                 </div>
                                 <div>
-                                    <h5 class="card-title mb-0"><?php echo htmlspecialchars($persona['name']); ?></h5>
-                                    <small class="text-muted"><?php echo htmlspecialchars($persona['short_description']); ?></small>
+                                    <h5 class="mb-0 text-bold-600"><?php echo htmlspecialchars($persona['name']); ?></h5>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        <span class="badge bg-<?php echo $status_class; ?>">
+                                            <?php echo $status_text; ?>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots-vertical"></i>
+                                <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown" style="margin-top: -4px;">
+                                    <i class="bi bi-three-dots-vertical fs-5"></i>
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#" onclick="editPersona(<?php echo $persona['persona_id']; ?>)">
                                         <i class="bi bi-pencil me-2"></i>Edit</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="viewPersonaAnalytics(<?php echo $persona['persona_id']; ?>)">
-                                        <i class="bi bi-graph-up me-2"></i>View Analytics</a></li>
+                                        <i class="bi bi-graph-up me-2"></i>Analytics</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="#" onclick="deletePersona(<?php echo $persona['persona_id']; ?>)">
                                         <i class="bi bi-trash me-2"></i>Delete</a></li>
@@ -296,53 +295,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                         
-                        <p class="card-text"><?php echo htmlspecialchars($persona['detailed_description']); ?></p>
+                        <p class="text-muted text-sm flex-grow-1 mb-4"><?php echo htmlspecialchars($persona['detailed_description']); ?></p>
                         
-                        <div class="mb-3">
-                            <h6 class="mb-2">Key Priorities:</h6>
-                            <div class="d-flex flex-wrap gap-1">
-                                <?php foreach ($priorities as $priority): 
+                        <div class="mb-4">
+                            <div class="d-flex flex-wrap gap-2">
+                                <?php foreach (array_slice($priorities, 0, 3) as $priority): 
                                     $priority_formatted = ucwords(str_replace('_', ' ', trim($priority)));
                                 ?>
-                                <span class="badge bg-light-<?php echo htmlspecialchars($persona['color_theme']); ?>"><?php echo $priority_formatted; ?></span>
+                                <span class="badge bg-light-secondary text-dark"><?php echo $priority_formatted; ?></span>
                                 <?php endforeach; ?>
+                                <?php if(count($priorities) > 3): ?>
+                                    <span class="badge bg-light-secondary text-dark">+<?php echo count($priorities) - 3; ?> more</span>
+                                <?php endif; ?>
                             </div>
                         </div>
                         
-                        <div class="row text-center mb-3">
-                            <div class="col-4">
-                                <small class="text-muted">Feedback</small>
-                                <h6 class="mb-0"><?php echo $persona['recommendation_count']; ?></h6>
+                        <div class="row text-center mt-auto pt-3 border-top">
+                            <div class="col-4 border-end">
+                                <h6 class="mb-0 text-muted">Feedback</h6>
+                                <span class="text-bold-600"><?php echo $persona['recommendation_count']; ?></span>
+                            </div>
+                            <div class="col-4 border-end">
+                                <h6 class="mb-0 text-muted">Approval</h6>
+                                <span class="text-bold-600 text-<?php echo $satisfaction >= 70 ? 'success' : 'warning'; ?>"><?php echo round($satisfaction, 0); ?>%</span>
                             </div>
                             <div class="col-4">
-                                <small class="text-muted">Satisfaction</small>
-                                <h6 class="mb-0 text-success"><?php echo round($satisfaction, 1); ?>%</h6>
+                                <h6 class="mb-0 text-muted">Likes</h6>
+                                <span class="text-bold-600 text-info"><?php echo $persona['total_likes'] ?? 0; ?></span>
                             </div>
-                            <div class="col-4">
-                                <small class="text-muted">Total Likes</small>
-                                <h6 class="mb-0 text-info"><?php echo $persona['total_likes'] ?? 0; ?></h6>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-<?php echo $status_class; ?>"><?php echo $status_text; ?></span>
-                            <small class="text-muted">Updated: <?php echo date('Y-m-d', strtotime($persona['updated_at'])); ?></small>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php 
-                endwhile;
-            else:
-            ?>
-            <div class="col-12">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>No personas found. Create your first persona to get started.
+        </div>
+        <?php 
+            endwhile;
+        else:
+        ?>
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center p-4">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">No Personas Found</h5>
+                    <p class="mb-0">Get started by creating your first persona for the AI recommendation engine.</p>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
-    </section>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Add/Edit Persona Modal -->
@@ -356,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="modal-body">
                 <form id="personaForm">
                     <input type="hidden" id="personaId" name="persona_id">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="personaName" class="form-label">Persona Name *</label>
@@ -398,51 +398,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Key Priorities (Select 3-5)</label>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="cpu_performance" id="priority1">
-                                            <label class="form-check-label" for="priority1">CPU Performance</label>
+                                <div class="card bg-light border-0 p-3 mb-0">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="cpu_performance" id="priority1">
+                                                <label class="form-check-label text-sm" for="priority1">CPU Performance</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="gpu_performance" id="priority2">
+                                                <label class="form-check-label text-sm" for="priority2">GPU Performance</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="battery_life" id="priority3">
+                                                <label class="form-check-label text-sm" for="priority3">Battery Life</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="portability" id="priority4">
+                                                <label class="form-check-label text-sm" for="priority4">Portability</label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="gpu_performance" id="priority2">
-                                            <label class="form-check-label" for="priority2">GPU Performance</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="battery_life" id="priority3">
-                                            <label class="form-check-label" for="priority3">Battery Life</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="portability" id="priority4">
-                                            <label class="form-check-label" for="priority4">Portability</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="display_quality" id="priority5">
-                                            <label class="form-check-label" for="priority5">Display Quality</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="value_for_money" id="priority6">
-                                            <label class="form-check-label" for="priority6">Value for Money</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="build_quality" id="priority7">
-                                            <label class="form-check-label" for="priority7">Build Quality</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="priorities[]" value="security" id="priority8">
-                                            <label class="form-check-label" for="priority8">Security</label>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="display_quality" id="priority5">
+                                                <label class="form-check-label text-sm" for="priority5">Display Quality</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="value_for_money" id="priority6">
+                                                <label class="form-check-label text-sm" for="priority6">Value for Money</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="build_quality" id="priority7">
+                                                <label class="form-check-label text-sm" for="priority7">Build Quality</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="priorities[]" value="security" id="priority8">
+                                                <label class="form-check-label text-sm" for="priority8">Security</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <div class="form-check">
+                                <div class="form-check form-switch pt-2">
                                     <input class="form-check-input" type="checkbox" name="is_active" id="personaActive" checked>
                                     <label class="form-check-label" for="personaActive">
-                                        Active (Available for recommendations)
+                                        Active Status
                                     </label>
+                                    <div class="text-muted text-xs">Available for new recommendations</div>
                                 </div>
                             </div>
                         </div>
@@ -450,8 +453,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="savePersona()">Save Persona</button>
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary ml-1" onclick="savePersona()">Save Persona</button>
             </div>
         </div>
     </div>
@@ -471,7 +474,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
                 location.reload();
             } else {
                 alert('Error: ' + data.message);
@@ -484,10 +486,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     function editPersona(personaId) {
-        // This would fetch persona data and populate the modal
         document.getElementById('addPersonaModalLabel').textContent = 'Edit Persona';
         document.getElementById('personaId').value = personaId;
-        // TODO: Fetch and populate existing data
         const modal = new bootstrap.Modal(document.getElementById('addPersonaModal'));
         modal.show();
     }
@@ -505,7 +505,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
                     location.reload();
                 } else {
                     alert('Error: ' + data.message);
@@ -519,7 +518,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     function viewPersonaAnalytics(personaId) {
-        // Redirect to analytics page or show modal
         window.location.href = 'admin_ai_performance.php?persona=' + personaId;
     }
     
