@@ -1582,3 +1582,868 @@ button.close-chat {
         margin-bottom: 30px;
     }
 }
+
+/* ==========================================================================
+   ASUS-STYLE AI CHATBOT - Enhanced Product Cards & Suggestions
+   ========================================================================== */
+
+/* --- Chat Toggle Button (Enhanced) --- */
+.chat-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: var(--white-color);
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chat-toggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.5);
+}
+
+.chat-toggle-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    .chat-toggle-label {
+        display: none;
+    }
+    .chat-toggle {
+        padding: 14px;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        justify-content: center;
+    }
+}
+
+/* --- Chat Widget Container --- */
+.chat-widget {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 400px;
+    height: 580px;
+    max-height: calc(100vh - 140px);
+    background-color: var(--white-color);
+    border-radius: 16px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chat-widget.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.chat-widget.maximized {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+}
+
+/* --- Chat Header (ASUS-style) --- */
+.chat-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: var(--white-color);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 16px 16px 0 0;
+}
+
+.chat-widget.maximized .chat-header {
+    border-radius: 0;
+}
+
+.chat-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-avatar svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.chat-header-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white-color);
+}
+
+.chat-status {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.chat-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chat-header-btn {
+    background: transparent;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.chat-header-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.chat-header-btn svg {
+    fill: currentColor;
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Chat Body --- */
+.chat-body {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+/* Custom scrollbar */
+.chat-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.chat-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* --- Welcome Message --- */
+.chat-welcome {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    background: var(--white-color);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.welcome-avatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.welcome-avatar svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+}
+
+.welcome-content {
+    flex: 1;
+}
+
+.welcome-greeting {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: var(--dark-grey);
+}
+
+.welcome-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+/* --- Chat Messages --- */
+.chat-message {
+    padding: 12px 16px;
+    border-radius: 16px;
+    max-width: 85%;
+    line-height: 1.5;
+    word-wrap: break-word;
+    animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message.bot {
+    background-color: var(--white-color);
+    color: var(--dark-grey);
+    align-self: flex-start;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.chat-message.user {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: var(--white-color);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.system {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #64748b;
+    text-align: center;
+    background: transparent;
+    width: 100%;
+    max-width: 100%;
+    padding: 8px;
+}
+
+/* Markdown styling in bot messages */
+.chat-message.bot p {
+    margin: 0 0 8px 0;
+}
+
+.chat-message.bot p:last-child {
+    margin-bottom: 0;
+}
+
+.chat-message.bot ol,
+.chat-message.bot ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.chat-message.bot li {
+    margin-bottom: 6px;
+}
+
+.chat-message.bot strong {
+    color: var(--primary-color);
+}
+
+/* --- Product Cards (ASUS-style) --- */
+.chat-product-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    animation: messageSlideIn 0.3s ease;
+}
+
+.chat-product-card {
+    display: flex;
+    background: var(--white-color);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.chat-product-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.15);
+    transform: translateY(-2px);
+}
+
+.product-card-image {
+    width: 100px;
+    min-width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 8px;
+}
+
+.product-card-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.product-card-info {
+    flex: 1;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.product-card-brand {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.product-card-name {
+    margin: 4px 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark-grey);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card-specs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.product-card-specs span {
+    font-size: 0.7rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.product-card-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.product-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-card-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-card-primary:hover {
+    background: var(--secondary-color);
+}
+
+/* --- Action Buttons (Compare, Browse) --- */
+.chat-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    animation: messageSlideIn 0.3s ease;
+}
+
+.chat-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: var(--dark-grey);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 20px;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.chat-action-btn:hover {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.chat-action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* --- Quick Suggestions --- */
+.chat-suggestions {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.suggestion-btn {
+    padding: 8px 14px;
+    background: var(--white-color);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.suggestion-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* --- Chat Footer --- */
+.chat-footer {
+    padding: 16px;
+    border-top: 1px solid #e2e8f0;
+    background: var(--white-color);
+}
+
+.chat-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 4px 4px 4px 16px;
+    transition: all 0.2s ease;
+}
+
+.chat-form:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.chat-form input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    font-size: 0.95rem;
+    outline: none;
+    font-family: inherit;
+}
+
+.chat-form input::placeholder {
+    color: #94a3b8;
+}
+
+.chat-form button {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-form button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.chat-form button svg {
+    fill: var(--white-color);
+    width: 20px;
+    height: 20px;
+}
+
+/* --- Typing Indicator --- */
+.typing-indicator {
+    display: none;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--white-color);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    align-self: flex-start;
+    gap: 4px;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background-color: #94a3b8;
+    border-radius: 50%;
+    display: inline-block;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 480px) {
+    .chat-widget {
+        width: 100%;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+    
+    .chat-widget.open {
+        border-radius: 0;
+    }
+    
+    .chat-header {
+        border-radius: 0;
+    }
+    
+    .chat-product-card {
+        flex-direction: column;
+    }
+    
+    .product-card-image {
+        width: 100%;
+        height: 120px;
+    }
+}
+
+/* ==========================================================================
+   ASUS-STYLE CHATBOT - ENHANCED FEATURES
+   ========================================================================== */
+
+/* --- Rating Banner (like ASUS) --- */
+.chat-rating-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.chat-rating-banner .rating-chevron {
+    font-size: 1.2rem;
+    animation: chevronBounce 1s infinite;
+}
+
+@keyframes chevronBounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+.chat-rating-banner a {
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* --- Product Card Price Row (ASUS-style) --- */
+.product-card-price-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.product-card-price-row .price-label {
+    font-size: 0.65rem;
+    color: #64748b;
+}
+
+.product-card-price-row .product-card-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin: 0;
+}
+
+/* --- Buy Button (ASUS-style) --- */
+.btn-card-buy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 24px;
+    background: #0d6efd;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-card-buy:hover {
+    background: #0a58ca;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* --- "You May Also Like" Section --- */
+.chat-also-like {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    animation: messageSlideIn 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.also-like-header {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: 12px;
+}
+
+.also-like-products {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.also-like-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    background: var(--white-color);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.also-like-item:hover {
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.also-like-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #f1f5f9;
+}
+
+.also-like-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* --- Clickable Product Links in Text --- */
+.chat-message.bot .product-link {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.chat-message.bot .product-link:hover {
+    color: var(--secondary-color);
+}
+
+/* --- Feedback Prompt --- */
+.chat-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    animation: messageSlideIn 0.3s ease;
+}
+
+.chat-feedback .feedback-text {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.chat-feedback .feedback-btn {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-feedback .feedback-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: #64748b;
+}
+
+.chat-feedback .feedback-btn:hover {
+    background: #f1f5f9;
+    border-color: var(--primary-color);
+}
+
+.chat-feedback .feedback-btn:hover svg {
+    fill: var(--primary-color);
+}
+
+.chat-feedback .feedback-btn[data-feedback="yes"]:hover {
+    background: #d1fae5;
+    border-color: #10b981;
+}
+
+.chat-feedback .feedback-btn[data-feedback="yes"]:hover svg {
+    fill: #10b981;
+}
+
+.chat-feedback .feedback-btn[data-feedback="no"]:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+}
+
+.chat-feedback .feedback-btn[data-feedback="no"]:hover svg {
+    fill: #ef4444;
+}
+
+.chat-feedback .feedback-thanks {
+    font-size: 0.8rem;
+    color: #10b981;
+    font-weight: 500;
+}
+
+/* --- Enhanced Product Card for ASUS style --- */
+.chat-product-card {
+    flex-direction: column;
+}
+
+.chat-product-card .product-card-image {
+    width: 100%;
+    height: 120px;
+    background: #ffffff;
+}
+
+.chat-product-card .product-card-info {
+    padding: 16px;
+    text-align: center;
+}
+
+.chat-product-card .product-card-name {
+    font-size: 0.95rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+}
+
+.chat-product-card .product-card-actions {
+    justify-content: center;
+}
+
+/* --- Message Timestamp --- */
+.chat-message-time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+    display: block;
+}

@@ -11,7 +11,7 @@ function isModulePage($pages) {
 // Define module pages
 $ecommerce_pages = ['admin_products.php', 'admin_orders.php', 'admin_inventory.php', 'admin_transactions.php', 'admin_coupons.php', 'admin_reviews.php'];
 $ai_pages = ['admin_personas.php', 'admin_recommendation_logs.php', 'admin_ai_performance.php'];
-$chatbot_pages = ['admin_conversation_logs.php', 'admin_intent_management.php', 'admin_chatbot_training.php', 'admin_chatbot_analytics.php'];
+$chatbot_pages = ['admin_conversation_logs.php', 'admin_chatbot_analytics.php'];
 $admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php'];
 
 // Check for dark mode
@@ -164,9 +164,6 @@ $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
                             <ul class="submenu <?php echo isModulePage($chatbot_pages) ? 'active' : ''; ?>">
                                 <li class="submenu-item <?php echo ($current_page == 'admin_conversation_logs.php') ? 'active' : ''; ?>">
                                     <a href="admin_conversation_logs.php">Conversation Logs</a>
-                                </li>
-                                <li class="submenu-item <?php echo ($current_page == 'admin_intent_management.php') ? 'active' : ''; ?>">
-                                    <a href="admin_intent_management.php">Intent & Response Management</a>
                                 </li>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_chatbot_analytics.php') ? 'active' : ''; ?>">
                                     <a href="admin_chatbot_analytics.php">Chatbot Analytics</a>
