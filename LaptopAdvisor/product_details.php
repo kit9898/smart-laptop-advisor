@@ -108,7 +108,7 @@ if (isset($_GET['product_id']) && is_numeric($_GET['product_id'])) {
         }
         
         // --- 4. FETCH REVIEWS & CALCULATE AVERAGE ---
-        $review_sql = "SELECT r.*, u.full_name FROM product_reviews r 
+        $review_sql = "SELECT r.*, r.admin_response, r.admin_response_date, u.full_name FROM product_reviews r 
                        LEFT JOIN users u ON r.user_id = u.user_id 
                        WHERE r.product_id = ? 
                        ORDER BY r.created_at DESC";
@@ -118,11 +118,31 @@ if (isset($_GET['product_id']) && is_numeric($_GET['product_id'])) {
         $reviews_result = $review_stmt->get_result();
         
         $rating_sum = 0;
+        $review_ids = [];
         while ($row = $reviews_result->fetch_assoc()) {
-            $reviews[] = $row;
+            $row['media'] = []; // Initialize media array
+            $reviews[$row['review_id']] = $row; // Key by ID for easier media attachment
             $rating_sum += $row['rating'];
+            $review_ids[] = $row['review_id'];
         }
         $review_stmt->close();
+        
+        // Fetch Review Media
+        if (!empty($review_ids)) {
+            $ids_str = implode(',', $review_ids);
+            $media_sql = "SELECT * FROM review_media WHERE review_id IN ($ids_str) ORDER BY media_id ASC";
+            $media_result = $conn->query($media_sql);
+            if ($media_result) {
+                while ($media = $media_result->fetch_assoc()) {
+                    if (isset($reviews[$media['review_id']])) {
+                        $reviews[$media['review_id']]['media'][] = $media;
+                    }
+                }
+            }
+        }
+        
+        // Re-index array for sequential iteration if needed, though foreach works on assoc too
+        $reviews = array_values($reviews);
 
         $total_reviews = count($reviews);
         if ($total_reviews > 0) {
@@ -215,7 +235,7 @@ function getUseCaseBadge($use_case) {
 }
 ?>
 
-<link rel="stylesheet" href="css/product-details.css">
+<link rel="stylesheet" href="css/product-details.css?v=<?php echo time(); ?>">
 
 <div class="product-detail-wrapper">
     <?php if ($product): ?>
@@ -590,14 +610,83 @@ function getUseCaseBadge($use_case) {
                 <div class="reviews-list">
                     <?php if ($total_reviews > 0): foreach ($reviews as $rev): ?>
                         <div class="review-card">
-                            <div class="review-header"><strong><?php echo htmlspecialchars($rev['full_name'] ?? 'User'); ?></strong><span style="color: #f59e0b;"><?php echo str_repeat('★', $rev['rating']); ?></span></div>
-                            <p><?php echo nl2br(htmlspecialchars($rev['review_text'])); ?></p>
+                            <div class="review-header">
+                                <strong><?php echo htmlspecialchars($rev['full_name'] ?? 'User'); ?></strong>
+                                <span style="color: #f59e0b; margin-left:10px;"><?php echo str_repeat('★', $rev['rating']); ?></span>
+                                <span class="verified-purchase">✓ Verified Review</span>
+                            </div>
+                            <p style="margin-top: 8px;"><?php echo nl2br(htmlspecialchars($rev['review_text'])); ?></p>
+                            
+                            <!-- Review Media Gallery -->
+                            <?php if (!empty($rev['media'])): ?>
+                            <div class="review-media-gallery">
+                                <?php foreach ($rev['media'] as $media): 
+                                    $media_url = str_replace('../', '', $media['file_path']); // Ensure path is correct relative to web root
+                                    // If stored with ../, remove it if we are displaying from same level or adjust
+                                    if (strpos($media['file_path'], 'uploads/') === 0 || strpos($media['file_path'], '../uploads/') === 0) {
+                                        // Path is good, maybe adjust ../
+                                        $display_url = $media['file_path'];
+                                        if (strpos($display_url, 'LaptopAdvisor/') === 0) $display_url = '../' . $display_url; 
+                                    } else {
+                                        $display_url = $media['file_path'];
+                                    }
+                                ?>
+                                    <div class="review-media-thumb" onclick="openReviewLightbox('<?php echo htmlspecialchars($display_url); ?>', '<?php echo $media['media_type']; ?>')">
+                                        <?php if ($media['media_type'] == 'video'): ?>
+                                            <video src="<?php echo htmlspecialchars($display_url); ?>#t=0.1" preload="metadata"></video>
+                                            <div class="play-icon-overlay" style="font-size: 12px;">▶</div>
+                                        <?php else: ?>
+                                            <img src="<?php echo htmlspecialchars($display_url); ?>" alt="Review Image" loading="lazy">
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Admin Response -->
+                            <?php if (!empty($rev['admin_response'])): ?>
+                            <div class="admin-response-box">
+                                <div class="admin-response-header">
+                                    <div>
+                                        <span class="admin-badge"><i class="fas fa-user-shield"></i> Admin Support</span>
+                                        <span style="font-size: 0.9rem; font-weight: 600; color: #333;">responded:</span>
+                                    </div>
+                                    <span class="admin-response-date"><?php echo !empty($rev['admin_response_date']) ? date('M d, Y', strtotime($rev['admin_response_date'])) : 'Recently'; ?></span>
+                                </div>
+                                <p class="admin-response-text"><?php echo nl2br(htmlspecialchars($rev['admin_response'])); ?></p>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; else: ?><p style="text-align: center; color: #666; padding: 20px;">No reviews yet.</p><?php endif; ?>
                 </div>
+                
+                <!-- Review Form with Upload -->
                 <div class="content-box" style="margin-top: 30px; border: 1px solid #e9ecef; padding: 25px; border-radius: 10px;">
                     <h4 style="margin-bottom: 15px;">Write a Review</h4>
-                    <form method="POST" action=""><label style="font-weight: 600; display: block;">Your Rating</label><div class="star-rating-input"><input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label><input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label><input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label><input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label><input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label></div><label style="font-weight: 600; display: block; margin-bottom: 8px;">Your Review</label><textarea name="review_text" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:15px;" rows="4" required></textarea><button type="submit" name="submit_review" class="add-to-cart-btn" style="width: auto; padding: 10px 30px; font-size: 1rem;">Submit Review</button></form>
+                    <form id="reviewForm" enctype="multipart/form-data">
+                        <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+                        <label style="font-weight: 600; display: block;">Your Rating</label>
+                        <div class="star-rating-input">
+                            <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+                        </div>
+                        
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Your Review</label>
+                        <textarea name="review_text" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:15px;" rows="4" required></textarea>
+                        
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Add Photos/Video (Optional)</label>
+                        <div class="file-upload-container" onclick="document.getElementById('fileInput').click()">
+                            <span class="file-upload-label">📸 Click to Upload Photos or Video</span>
+                            <span style="font-size: 0.8rem; color: #888;">Max 3 files (Images up to 5MB, Videos up to 20MB)</span>
+                            <input type="file" id="fileInput" name="review_media[]" class="file-upload-input" multiple accept="image/*,video/mp4,video/webm" onchange="handleFileSelect(event)">
+                        </div>
+                        <div id="previewContainer" class="upload-preview-container"></div>
+                        
+                        <button type="submit" id="submitReviewBtn" class="add-to-cart-btn" style="width: auto; padding: 10px 30px; font-size: 1rem; margin-top: 15px;">Submit Review</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -895,6 +984,109 @@ function addToCompare(productId, category) {
 document.addEventListener('DOMContentLoaded', updateCompareBar);
 
 </script>
+
+<script>
+// --- REVIEW FILE UPLOAD & PREVIEW ---
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const container = document.getElementById('previewContainer');
+    container.innerHTML = ''; // Clear existing previews
+
+    if (files.length > 3) {
+        showToast('You can only upload a maximum of 3 files.', 'error');
+        event.target.value = ''; // Reset
+        return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            
+            if (file.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.src = e.target.result;
+                video.muted = true;
+                div.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                div.appendChild(img);
+            }
+            container.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+// --- AJAX REVIEW SUBMISSION ---
+document.getElementById('reviewForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const btn = document.getElementById('submitReviewBtn');
+    const originalText = btn.innerText;
+    
+    btn.disabled = true;
+    btn.innerText = 'Submitting...';
+    
+    fetch('ajax/submit_review.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast(data.message, 'error');
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerText = originalText;
+    });
+});
+
+// --- LIGHTBOX FOR REVIEWS ---
+function openReviewLightbox(url, type) {
+    const modal = document.getElementById("imageLightbox");
+    const wrapper = document.getElementById("lightboxContentWrapper");
+    wrapper.innerHTML = '';
+    
+    let element;
+    if (type === 'video') {
+        element = document.createElement('video');
+        element.src = url;
+        element.controls = true;
+        element.autoplay = true;
+        element.style.maxWidth = '90vw';
+        element.style.maxHeight = '90vh';
+    } else {
+        element = document.createElement('img');
+        element.src = url;
+        element.style.maxWidth = '90vw';
+        element.style.maxHeight = '90vh';
+        element.style.objectFit = 'contain';
+    }
+    
+    wrapper.appendChild(element);
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+</script>
+
 
 <!-- Sticky Compare Bar -->
 <div class="sticky-compare-bar" id="compareBar">

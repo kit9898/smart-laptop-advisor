@@ -1,0 +1,8 @@
+# Prevent execution of PHP scripts in this directory
+<FilesMatch "\.(php|php5|phtml)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Only allow image and video types if possible (Apache specific, optional)
+# Options -Indexes

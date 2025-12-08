@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 07, 2025 at 05:29 PM
+-- Generation Time: Dec 08, 2025 at 05:18 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -81,7 +81,34 @@ INSERT INTO `admin_activity_log` (`log_id`, `admin_id`, `action`, `module`, `des
 (31, 1, 'login', 'auth', 'Admin logged in successfully', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/login.php', NULL, '2025-12-07 15:35:16'),
 (32, 1, 'update', 'settings', 'Updated personal preferences', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_settings.php', NULL, '2025-12-07 15:56:17'),
 (33, 1, 'logout', 'auth', 'Admin logged out', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/logout.php', NULL, '2025-12-07 16:13:38'),
-(34, 1, 'update', 'settings', 'Updated personal preferences', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_settings.php', NULL, '2025-12-07 16:16:43');
+(34, 1, 'update', 'settings', 'Updated personal preferences', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_settings.php', NULL, '2025-12-07 16:16:43'),
+(35, 1, 'delete', 'products', 'Bulk deleted 6 products', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 16:43:28'),
+(36, 1, 'update', 'orders', 'Verified payment for Order #27', 'order', 27, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/transaction_actions.php', NULL, '2025-12-07 16:48:29'),
+(37, 1, 'update', 'products', 'Updated product: Asus ROG Strix G16', 'product', 128, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 17:43:11'),
+(38, 1, 'update', 'products', 'Updated product: ROG Strix G15', 'product', 7, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 17:50:46'),
+(39, 1, 'update', 'products', 'Updated product: Blade 15', 'product', 3, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 17:50:55'),
+(40, 1, 'update', 'products', 'Updated product: Blade 15', 'product', 3, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 17:54:27'),
+(41, 1, 'update', 'products', 'Updated product: ZenBook Duo', 'product', 2, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 17:58:26'),
+(42, 1, 'delete', 'products', 'Bulk deleted 50 products', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_products.php', NULL, '2025-12-07 18:05:38'),
+(43, 1, 'logout', 'auth', 'Admin logged out', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/logout.php', NULL, '2025-12-07 18:58:51'),
+(44, 1, 'login', 'auth', 'Admin logged in successfully', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/login.php', NULL, '2025-12-07 18:58:53'),
+(45, 1, 'create', 'admin_users', 'Created new admin: GYZ TZE (GYZLOVETZE@gmail.com)', 'admin', 15, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:15'),
+(46, 1, 'update', 'admin_users', 'Updated admin details: GYZ TZE', 'admin', 15, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:20'),
+(47, 1, 'update', 'admin_users', 'Updated admin details: GYZ TZE', 'admin', 15, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:25'),
+(48, 1, 'update', 'admin_users', 'Updated admin details: GYZ TZE', 'admin', 15, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:33'),
+(49, 1, 'create', 'roles', 'Created new role: 111', 'role', 10, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:45'),
+(50, 1, 'delete', 'roles', 'Deleted role ID: 10', 'role', 10, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:20:48'),
+(51, 1, 'logout', 'auth', 'Admin logged out', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/logout.php', NULL, '2025-12-07 19:21:35'),
+(52, 1, 'login', 'auth', 'Admin logged in successfully', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/login.php', NULL, '2025-12-07 19:21:37'),
+(53, 1, 'update', 'admin_users', 'Updated admin details: GYZ TZE', 'admin', 15, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:21:49'),
+(54, 1, 'create', 'coupons', 'Created coupon: XD985', 'coupon', 4, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:32:14'),
+(55, 1, 'update', 'coupons', 'Updated coupon: XD985', 'coupon', 4, '::1', NULL, NULL, NULL, NULL, '2025-12-07 19:33:02'),
+(56, 1, 'update', 'settings', 'Updated personal preferences', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/admin_settings.php', NULL, '2025-12-07 19:35:22'),
+(57, 1, 'update', 'users', 'Updated profile for user ID: 6', 'user', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/update_customer.php', NULL, '2025-12-07 19:37:57'),
+(58, 1, 'update', 'users', 'Updated profile for user ID: 4', 'user', 4, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/update_customer.php', NULL, '2025-12-07 19:38:01'),
+(59, 1, 'update', 'users', 'Updated profile for user ID: 3', 'user', 3, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/update_customer.php', NULL, '2025-12-07 19:38:04'),
+(60, 1, 'update', 'users', 'Updated profile for user ID: 2', 'user', 2, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/update_customer.php', NULL, '2025-12-07 19:38:07'),
+(61, 1, 'update', 'users', 'Updated profile for user ID: 1', 'user', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', NULL, '/fyp/admin/ajax/update_customer.php', NULL, '2025-12-07 19:38:10');
 
 -- --------------------------------------------------------
 
@@ -109,14 +136,14 @@ INSERT INTO `admin_sessions` (`session_id`, `admin_id`, `ip_address`, `user_agen
 ('30001a156de486bbce092af6d563ee90353850760a6bbe5a28c6456cd0bc7bea', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-01 16:13:39', '2025-12-01 16:13:39', '2025-12-02 16:13:39', 1),
 ('3ec7b1dd0b90ef4d6e867e5c32dc899f4123fa4dc6626b9f00dcd91707ea6fbf', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-11-22 04:34:50', '2025-11-22 04:34:50', '2025-11-23 04:34:50', 1),
 ('467461617411514d096f80d7f8f24c36f894f3fde2c54fe45fd371cda4fae7c8', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-02 11:37:38', '2025-12-02 11:37:38', '2025-12-03 11:37:38', 1),
+('6c10f94d02455d0f739f916183d6038098719dd1132c67f1d568f3d58500b0b1', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', '2025-12-08 03:21:37', '2025-12-08 03:21:37', '2025-12-09 03:21:37', 1),
 ('6e1e039c5e0918d31acd787f569abfa25eb25f9501de8ab0bfcb0e8cba604ed4', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-02 19:31:17', '2025-12-02 19:31:17', '2025-12-03 19:31:17', 1),
 ('79aa47d6395816e07ebf45631ed66d4deab011b293d1cfd0f9185cf05e39939b', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-11-22 14:55:41', '2025-11-22 14:55:41', '2025-11-23 14:55:41', 1),
 ('7d7ab7204a215e7ff33e7ae6d8b0cc7e8e41c80aafe3a8ac69c2982afbe02136', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-11-22 04:34:23', '2025-11-22 04:34:23', '2025-11-23 04:34:23', 1),
 ('8dd810838b06ecb04f0dabc70db18acc422fd087f6672642649f0a97524cae27', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-11-22 04:34:31', '2025-11-22 04:34:31', '2025-11-23 04:34:31', 1),
 ('9dc7628840225b89fd580e0584845d2c1a32f16bed8c713599a1ff6980ee99c7', 2, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-11-22 04:35:07', '2025-11-22 04:35:07', '2025-11-23 04:35:07', 1),
 ('c413ddfda91a8cadd37df9d45ce663c101d1ff00fa9aaaa0c6df38374830ef95', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-02 19:29:42', '2025-12-02 19:29:42', '2025-12-03 19:29:42', 1),
-('e9ee9f9532698841ed7956ad667311a8e3d92c888c9a010314e880a13dbb2ecf', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-01 14:36:36', '2025-12-01 14:36:36', '2025-12-02 14:36:36', 1),
-('ebc0c1d6934f72fa7e86e0f23bd98a37eaed04162996392c418ceb297a66bffd', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0', '2025-12-07 23:24:31', '2025-12-07 23:24:31', '2025-12-08 23:24:31', 1);
+('e9ee9f9532698841ed7956ad667311a8e3d92c888c9a010314e880a13dbb2ecf', 1, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0', '2025-12-01 14:36:36', '2025-12-01 14:36:36', '2025-12-02 14:36:36', 1);
 
 -- --------------------------------------------------------
 
@@ -157,10 +184,11 @@ CREATE TABLE `admin_users` (
 --
 
 INSERT INTO `admin_users` (`admin_id`, `admin_code`, `first_name`, `last_name`, `email`, `password_hash`, `role_id`, `status`, `last_login`, `login_count`, `failed_login_attempts`, `last_failed_login`, `lockout_until`, `two_factor_enabled`, `two_factor_secret`, `profile_picture`, `phone`, `timezone`, `language`, `email_notifications`, `force_password_change`, `password_last_changed`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'ADMIN-001', 'Admin', 'Cho Choong Kit', 'sarah.johnson@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 1, 'active', '2025-12-07 23:35:16', 3491, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-12-07 15:35:16'),
+(1, 'ADMIN-001', 'Admin', 'Cho Choong Kit', 'sarah.johnson@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 1, 'active', '2025-12-08 03:21:37', 3, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-12-07 19:21:37'),
 (2, 'ADMIN-002', 'Michael', 'Chen', 'michael.chen@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 2, 'active', '2025-11-22 04:35:49', 1, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-11-24 17:11:28'),
-(3, 'ADMIN-003', 'Emily', 'Rodriguez', 'emily.rodriguez@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 4, 'active', NULL, 98, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-11-21 20:34:41'),
-(4, 'ADMIN-004', 'David', 'Kim', 'david.kim@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 3, 'active', NULL, 45, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-11-21 20:34:41');
+(3, 'ADMIN-003', 'Emily', 'Rodriguez', 'emily.rodriguez@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 4, 'active', NULL, 1, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-12-07 18:50:38'),
+(4, 'ADMIN-004', 'David', 'Kim', 'david.kim@smartlaptop.com', '$2y$10$16u7PX4cGXybAi5et0rXTuNPdX8XiOQYQBUwHfmPun7IBiQGMrwL2', 3, 'active', NULL, 1, 0, NULL, NULL, 0, NULL, NULL, NULL, 'America/New_York', 'en', 1, 0, NULL, NULL, '2025-11-21 20:12:32', '2025-12-07 18:50:41'),
+(15, 'ADMIN-005', 'GYZ', 'TZE', 'GYZ@gmail.com', '$2y$10$nyoPe8CzDE/WovWMY8h0duEbuiJ9MuibIN6pg4.Dm4wBR1ss8n45a', 7, 'active', NULL, 0, 0, NULL, NULL, 0, NULL, NULL, '', 'America/New_York', 'en', 1, 0, NULL, 1, '2025-12-07 19:20:15', '2025-12-07 19:21:49');
 
 -- --------------------------------------------------------
 
@@ -477,7 +505,8 @@ INSERT INTO `conversations` (`conversation_id`, `session_id`, `user_id`, `user_i
 (20, 'chat_692f2d8300e24_829515c16c98da82', 4, '::1', 'web', '2025-12-03 02:18:43', NULL, 0, 0, 0, 0, 'neutral', 0.00, NULL, NULL, NULL, 0, NULL, '2025-12-02 18:18:43', '2025-12-02 18:18:43'),
 (21, 'chat_692f2da269488_9a26044b586d4b06', 4, '::1', 'web', '2025-12-03 02:19:14', NULL, 0, 0, 0, 0, 'neutral', 0.00, NULL, NULL, NULL, 0, NULL, '2025-12-02 18:19:14', '2025-12-02 18:19:14'),
 (22, 'chat_692f2dddeef23_deaaa511d61f5e9b', 4, '::1', 'web', '2025-12-03 02:20:13', NULL, 0, 0, 0, 0, 'neutral', 0.00, NULL, NULL, NULL, 0, NULL, '2025-12-02 18:20:13', '2025-12-02 18:20:13'),
-(23, 'chat_692f18cb0d84f_caa9f98f5311ebb6', 6, '::1', 'web', '2025-12-07 16:37:18', NULL, 0, 0, 0, 0, 'neutral', 0.00, 'general_chat', NULL, NULL, 0, NULL, '2025-12-07 08:37:18', '2025-12-07 08:37:23');
+(23, 'chat_692f18cb0d84f_caa9f98f5311ebb6', 6, '::1', 'web', '2025-12-07 16:37:18', NULL, 0, 0, 0, 0, 'neutral', 0.00, 'general_chat', NULL, NULL, 0, NULL, '2025-12-07 08:37:18', '2025-12-07 08:37:23'),
+(24, 'chat_69364fc6ec1f8_4cdcb665d9db2528', 6, '::1', 'web', '2025-12-08 12:10:46', NULL, 0, 0, 0, 0, 'neutral', 0.00, NULL, NULL, NULL, 0, NULL, '2025-12-08 04:10:46', '2025-12-08 04:10:46');
 
 -- --------------------------------------------------------
 
@@ -691,7 +720,8 @@ CREATE TABLE `coupons` (
 INSERT INTO `coupons` (`coupon_id`, `code`, `discount_type`, `discount_value`, `expiry_date`, `is_active`) VALUES
 (1, 'SAVE10', 'percentage', 10.00, '2025-12-31', 1),
 (2, '50OFF', 'fixed', 50.00, NULL, 1),
-(3, 'EXPIRED', 'percentage', 20.00, '2020-01-01', 0);
+(3, 'EXPIRED', 'percentage', 20.00, '2020-01-01', 0),
+(4, 'XD985', 'fixed', 10.00, '2025-12-09', 0);
 
 -- --------------------------------------------------------
 
@@ -826,7 +856,8 @@ INSERT INTO `orders` (`order_id`, `user_id`, `total_amount`, `order_status`, `sh
 (24, 4, 900.00, 'Completed', 'GWK', 'Tingkat Lahat Mines 4', 'Lahat', 'Perak', '31500', 'Malaysia', '+60165076821', '2025-12-01 15:59:29', 'Credit Card', 0),
 (25, 4, 5000.00, 'Shipped', 'GWK', 'Tingkat Lahat Mines 4', 'Lahat', 'Perak', '31500', 'Malaysia', '+60165076821', '2025-12-02 15:22:42', 'Credit Card', 0),
 (26, 6, 279.98, 'Pending', 'GYZ', 'asdsdad', 'Lahat', 'Perak', '31500', 'Malaysia', '+60115076821', '2025-12-07 08:38:53', 'Credit Card', 0),
-(27, 6, 5000.00, 'Pending', 'GYZ', 'asdsdad', 'Lahat', 'Perak', '31500', 'Malaysia', '+60115076821', '2025-12-07 16:14:21', 'Credit Card', 0);
+(27, 6, 5000.00, 'Completed', 'GYZ', 'asdsdad', 'Lahat', 'Perak', '31500', 'Malaysia', '+60115076821', '2025-12-07 16:14:21', 'Credit Card', 0),
+(28, 6, 5000.00, 'Pending', 'GYZ', 'asdsdad', 'Lahat', 'Perak', '31500', 'Malaysia', '+60115076821', '2025-12-07 17:43:48', 'Credit Card', 0);
 
 -- --------------------------------------------------------
 
@@ -862,7 +893,8 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (28, 24, 117, 3, 300.00),
 (29, 25, 128, 1, 5000.00),
 (30, 26, 124, 2, 139.99),
-(31, 27, 128, 1, 5000.00);
+(31, 27, 128, 1, 5000.00),
+(32, 28, 128, 1, 5000.00);
 
 -- --------------------------------------------------------
 
@@ -970,9 +1002,10 @@ CREATE TABLE `personas` (
 INSERT INTO `personas` (`persona_id`, `name`, `short_description`, `detailed_description`, `icon_class`, `color_theme`, `key_priorities`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Student', 'Budget-conscious learners', 'Focuses on affordable laptops with good performance for studying, note-taking, and basic productivity tasks.', 'bi bi-mortarboard', 'primary', 'Battery Life,Portability,Value for Money', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15'),
 (2, 'Professional', 'Business & productivity', 'Targets working professionals who need reliable, efficient laptops for office work, meetings, and multitasking.', 'bi bi-briefcase', 'success', 'CPU Performance,RAM Capacity,Keyboard Quality', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15'),
-(3, 'Creative', 'Designers & content creators', 'Aimed at graphic designers, video editors, and content creators who need powerful hardware for creative work.', 'bi bi-palette', 'warning', 'GPU Performance,Display Quality,Color Accuracy', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15'),
+(3, 'Creative', 'Designers & content creators', 'Aimed at graphic designers, video editors, and content creators who need powerful hardware for creative work.', 'bi bi-palette', 'warning', '', 1, '2025-11-21 19:46:15', '2025-12-07 17:24:58'),
 (4, 'Gamer', 'Gaming enthusiasts', 'Designed for gaming enthusiasts who prioritize high-performance graphics and smooth gameplay.', 'bi bi-controller', 'danger', 'GPU Performance,Refresh Rate,Cooling System', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15'),
-(5, 'Developer', 'Software engineers', 'Caters to software developers who need fast compilation, multiple VMs, and coding efficiency.', 'bi bi-laptop', 'info', 'CPU Performance,RAM Capacity,SSD Speed', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15');
+(5, 'Developer', 'Software engineers', 'Caters to software developers who need fast compilation, multiple VMs, and coding efficiency.', 'bi bi-laptop', 'info', 'CPU Performance,RAM Capacity,SSD Speed', 1, '2025-11-21 19:46:15', '2025-11-21 19:46:15'),
+(14, 'Home User', 'Everyday performance for daily tasks', 'Designed for Home Users who need a simple, reliable device for everyday tasks with good performance and value.', 'bi bi-house', 'primary', 'cpu_performance,gpu_performance,battery_life', 1, '2025-12-07 17:27:18', '2025-12-07 17:28:08');
 
 -- --------------------------------------------------------
 
@@ -998,31 +1031,26 @@ CREATE TABLE `products` (
   `battery_life` varchar(50) DEFAULT NULL,
   `image_url` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `primary_use_case` varchar(100) DEFAULT NULL COMMENT 'e.g., Gaming, Business, General'
+  `primary_use_case` varchar(100) DEFAULT NULL COMMENT 'e.g., Gaming, Business, General',
+  `is_active` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `product_category`, `related_to_category`, `brand`, `price`, `stock_quantity`, `min_stock_level`, `cpu`, `gpu`, `ram_gb`, `storage_gb`, `storage_type`, `display_size`, `battery_life`, `image_url`, `description`, `primary_use_case`) VALUES
-(1, 'Creator Z16', 'laptop', NULL, 'MSI', 2499.99, 50, 10, 'Intel Core i7', 'NVIDIA RTX 3060', 16, 1024, 'SSD', 16.00, NULL, 'images/laptop1.png', 'A powerful laptop for creative professionals.', 'Creative'),
-(2, 'ZenBook Duo', 'laptop', NULL, 'Asus', 1999.00, 50, 10, 'Intel Core i9', 'NVIDIA RTX 3070', 32, 1024, 'SSD', 14.00, NULL, 'images/laptop2.png', 'Dual-screen laptop for ultimate productivity.', 'Business'),
-(3, 'Blade 15', 'laptop', NULL, 'Razer', 2999.50, 50, 10, 'Intel Core i7', 'NVIDIA RTX 3080', 16, 1024, 'SSD', 15.60, NULL, 'images/laptop3.png', 'The ultimate gaming laptop with a sleek design.', 'Gaming'),
-(4, 'IdeaPad Slim 3', 'laptop', NULL, 'Lenovo', 649.00, 50, 10, 'AMD Ryzen 5', 'Integrated Radeon', 8, 512, 'SSD', 15.60, NULL, 'images/laptop4.jpg', 'Great for students and everyday tasks.', 'Student'),
-(5, 'MacBook Pro 16', 'laptop', NULL, 'Apple', 3499.00, 50, 10, 'Apple M2 Pro', 'Integrated', 16, 1024, 'SSD', 16.20, NULL, 'images/laptop5.png', 'Powerful performance for professionals and creatives.', 'Creative'),
-(6, 'Spectre x360', 'laptop', NULL, 'HP', 1450.00, 50, 10, 'Intel Core i7', 'Intel Iris Xe', 16, 512, 'SSD', 13.50, NULL, 'images/laptop6.png', 'A versatile 2-in-1 laptop with a premium feel.', 'Business'),
-(7, 'ROG Strix G15', 'laptop', NULL, 'Asus', 1899.99, 49, 10, 'AMD Ryzen 9', 'NVIDIA RTX 3070', 16, 1024, 'SSD', 15.60, NULL, 'images/laptop7.png', 'High-refresh-rate gaming powerhouse.', 'Gaming'),
-(8, 'Pavilion 15', 'mouse', NULL, 'HP', 799.00, 40, 10, 'Intel Core i5', 'Intel Iris Xe', 12, 512, 'SSD', 15.60, NULL, 'LaptopAdvisor/images/product_692eee166259e.jpg', 'A reliable all-rounder for work and entertainment.', 'General'),
-(117, 'Logitech G ', 'mouse', 'Gaming', 'Logitech ', 300.00, 12, 10, '', '', 0, 0, 'SSD', 0.00, NULL, 'LaptopAdvisor/images/product_692d9b1204696.webp', '', 'Gaming'),
-(118, 'Dell XPS 15', 'laptop', NULL, 'Dell', 1599.99, 50, 10, 'Intel Core i7-13700H', 'NVIDIA RTX 4050', 16, 512, 'SSD', 15.60, NULL, NULL, 'Premium business laptop with stunning display and powerful performance', 'Business'),
-(119, 'MacBook Pro 14', 'laptop', NULL, 'Apple', 1999.99, 50, 10, 'Apple M3 Pro', 'Integrated', 18, 512, 'SSD', 14.20, NULL, NULL, 'Professional-grade laptop for creative work with excellent display', 'Creative'),
-(120, 'ASUS ROG Strix G15', 'laptop', NULL, 'ASUS', 1299.99, 50, 10, 'AMD Ryzen 7 7735HS', 'NVIDIA RTX 4060', 16, 1000, 'SSD', 15.60, NULL, NULL, 'High-performance gaming laptop with RGB lighting', 'Gaming'),
-(121, 'Lenovo ThinkPad X1', 'laptop', NULL, 'Lenovo', 1399.99, 20, 10, 'Intel Core i5-1340P', 'Intel Iris Xe', 16, 512, 'SSD', 14.00, NULL, NULL, 'Business ultrabook with legendary keyboard and security features', 'Business'),
-(122, 'HP Pavilion 15', 'laptop', NULL, 'HP', 799.99, 50, 10, 'Intel Core i5-1235U', 'Intel Iris Xe', 8, 512, 'SSD', 15.60, NULL, NULL, 'Affordable laptop perfect for students and everyday computing', 'Student'),
-(124, 'Razer BlackWidow V3', 'keyboard', 'Gaming', 'Razer', 139.99, 48, 10, '', '', 0, 0, '', 0.00, NULL, NULL, 'Mechanical gaming keyboard with Razer Green switches and RGB', 'Gaming'),
-(125, 'SteelSeries Arctis 7', 'headset', 'Gaming', 'SteelSeries', 149.99, 50, 10, '', '', 0, 0, '', 0.00, NULL, NULL, 'Wireless gaming headset with lossless audio and 24-hour battery', 'Gaming'),
-(128, 'Asus ROG Strix G16', 'laptop', NULL, 'Asus', 5000.00, 48, 10, ' i7-13650HX', 'NVIDIA GeForce RTX 4060', 32, 1024, 'SSD', 15.60, '10 hours', 'LaptopAdvisor/images/product_692f0409da2d4.webp', 'Power Power Up Your Gaming – Windows 11, 13th Gen Intel Core i7-13650HX Processor And NVIDIA GeForce RTX 4060 Laptop GPU, Up To 140W TGP To Win More Games\r\n\r\n', 'Gaming');
+INSERT INTO `products` (`product_id`, `product_name`, `product_category`, `related_to_category`, `brand`, `price`, `stock_quantity`, `min_stock_level`, `cpu`, `gpu`, `ram_gb`, `storage_gb`, `storage_type`, `display_size`, `battery_life`, `image_url`, `description`, `primary_use_case`, `is_active`) VALUES
+(1, 'Creator Z16', 'laptop', NULL, 'MSI', 2499.99, 50, 10, 'Intel Core i7', 'NVIDIA RTX 3060', 16, 1024, 'SSD', 16.00, NULL, 'images/laptop1.png', 'A powerful laptop for creative professionals.', 'Creative', 1),
+(2, 'ZenBook Duo', 'laptop', NULL, 'Asus', 1999.00, 50, 10, 'Intel Core i9', 'NVIDIA RTX 3070', 32, 1024, 'SSD', 14.00, '', 'images/laptop2.png', 'Dual-screen laptop for ultimate productivity.', 'Professional', 1),
+(3, 'Blade 15', 'laptop', NULL, 'Razer', 2999.50, 50, 10, 'Intel Core i7', 'NVIDIA RTX 3080', 16, 1024, 'SSD', 15.60, '', 'images/laptop3.png', 'The ultimate gaming laptop with a sleek design.', 'Gamer', 1),
+(4, 'IdeaPad Slim 3', 'laptop', NULL, 'Lenovo', 649.00, 50, 10, 'AMD Ryzen 5', 'Integrated Radeon', 8, 512, 'SSD', 15.60, NULL, 'images/laptop4.jpg', 'Great for students and everyday tasks.', 'Student', 1),
+(5, 'MacBook Pro 16', 'laptop', NULL, 'Apple', 3499.00, 50, 10, 'Apple M2 Pro', 'Integrated', 16, 1024, 'SSD', 16.20, NULL, 'images/laptop5.png', 'Powerful performance for professionals and creatives.', 'Creative', 1),
+(6, 'Spectre x360', 'laptop', NULL, 'HP', 1450.00, 50, 10, 'Intel Core i7', 'Intel Iris Xe', 16, 512, 'SSD', 13.50, NULL, 'images/laptop6.png', 'A versatile 2-in-1 laptop with a premium feel.', 'Business', 1),
+(7, 'ROG Strix G15', 'laptop', NULL, 'Asus', 1899.99, 49, 10, 'AMD Ryzen 9', 'NVIDIA RTX 3070', 16, 1024, 'SSD', 15.60, '', 'images/laptop7.png', 'High-refresh-rate gaming powerhouse.', 'Gamer', 1),
+(8, 'Pavilion 15', 'mouse', NULL, 'HP', 799.00, 40, 10, 'Intel Core i5', 'Intel Iris Xe', 12, 512, 'SSD', 15.60, NULL, 'LaptopAdvisor/images/product_692eee166259e.jpg', 'A reliable all-rounder for work and entertainment.', 'General', 0),
+(117, 'Logitech G ', 'mouse', 'Gaming', 'Logitech ', 300.00, 12, 10, '', '', 0, 0, 'SSD', 0.00, NULL, 'LaptopAdvisor/images/product_692d9b1204696.webp', '', 'Gaming', 0),
+(124, 'Razer BlackWidow V3', 'keyboard', 'Gaming', 'Razer', 139.99, 48, 10, '', '', 0, 0, '', 0.00, NULL, NULL, 'Mechanical gaming keyboard with Razer Green switches and RGB', 'Gaming', 0),
+(128, 'Asus ROG Strix G16', 'laptop', NULL, 'Asus', 5000.00, 47, 10, ' i7-13650HX', 'NVIDIA GeForce RTX 4060', 32, 1024, 'SSD', 15.60, '', 'LaptopAdvisor/images/product_692f0409da2d4.webp', 'Power Power Up Your Gaming – Windows 11, 13th Gen Intel Core i7-13650HX Processor And NVIDIA GeForce RTX 4060 Laptop GPU, Up To 140W TGP To Win More Games\r\n\r\n', 'Developer', 1);
 
 -- --------------------------------------------------------
 
@@ -1069,16 +1097,19 @@ CREATE TABLE `product_reviews` (
   `user_id` int(11) NOT NULL,
   `rating` tinyint(1) NOT NULL,
   `review_text` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `admin_response` text DEFAULT NULL,
+  `admin_response_date` datetime DEFAULT NULL,
+  `admin_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `product_reviews`
 --
 
-INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `review_text`, `created_at`) VALUES
-(1, 8, 4, 4, 'good laptop', '2025-11-25 12:23:07'),
-(3, 117, 4, 5, 'good product', '2025-12-02 03:36:53');
+INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `review_text`, `created_at`, `admin_response`, `admin_response_date`, `admin_id`) VALUES
+(4, 4, 6, 5, 'good products', '2025-12-08 03:30:23', 'TEST RESPONSE 1765166618', NULL, NULL),
+(8, 3, 6, 4, 'donked', '2025-12-08 04:12:12', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1127,7 +1158,30 @@ INSERT INTO `recommendation_ratings` (`rating_id`, `user_id`, `product_id`, `rat
 (9, 4, 4, 1, '2025-12-02 15:06:53'),
 (10, 4, 122, -1, '2025-12-02 15:33:32'),
 (12, 4, 6, 1, '2025-12-02 15:36:21'),
-(13, 4, 118, 1, '2025-12-02 15:36:29');
+(13, 4, 118, 1, '2025-12-02 15:36:29'),
+(14, 6, 128, 1, '2025-12-07 17:49:06'),
+(16, 6, 3, 1, '2025-12-07 18:06:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `review_media`
+--
+
+CREATE TABLE `review_media` (
+  `media_id` int(11) NOT NULL,
+  `review_id` int(11) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `media_type` enum('image','video') NOT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `review_media`
+--
+
+INSERT INTO `review_media` (`media_id`, `review_id`, `file_path`, `media_type`, `uploaded_at`) VALUES
+(3, 8, 'uploads/reviews/3/8_6936501c48b24.jpg', 'image', '2025-12-08 04:12:12');
 
 -- --------------------------------------------------------
 
@@ -1474,11 +1528,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `full_name`, `email`, `password_hash`, `status`, `profile_image_url`, `primary_use_case`, `default_shipping_name`, `default_shipping_address`, `default_shipping_city`, `default_shipping_state`, `default_shipping_zip`, `default_shipping_country`, `default_shipping_phone`, `created_at`) VALUES
-(1, 'Heng', 'chansh-am22@student.tarc.edu.my', '$2y$10$3Sm1lxjx6YodMxqCXW0riOY6Plen2z.pV.GXvYL.KH3a.3dmFPRMy', 'pending', 'uploads/68d83a959bb49-Screenshot 2024-05-03 151943.png', 'Business', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 17:21:42'),
-(2, 'xuan', 'chan123@GMAIL.COM', '$2y$10$UqWAFCaxniqS5NKJDYgndOWtGvfVlv3rwWfdJVo.f0mbUMkYPmY16', 'pending', 'uploads/default.png', 'Student', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-28 06:08:01'),
-(3, 'xuan', 'abc@gmail.com', '$2y$10$WbU7EDXaKg0EcfW.B.spWOqvSqrLro1z9NCpw9DW.Z8xMhe04PRMm', 'pending', 'uploads/default.png', 'Student', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-11-11 14:17:17'),
-(4, 'GYZ', 'GYZ@gmail.com', '$2y$10$b2eGc843Cu2g7Q0AyP4w1ulwZTmgomHrPv4QpFC9XtHSOAhlCOrqa', 'active', 'uploads/6920af2dc9395-donk.jpg', 'Business', 'GWK', 'Tingkat Lahat Mines 4', 'Lahat', 'Perak', '31500', 'Malaysia', '+60165076821', '2025-11-21 18:27:28'),
-(6, 'cck', 'chock-am22@student.tarc.edu.my', '$2y$10$VzgL/FZDSCQeqhGiGgtxae3fX9.z/4QLAIlDDDmk.GhqSNczOI0tm', 'pending', 'uploads/default.png', 'General Use', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-12-02 07:00:41');
+(1, 'Heng', 'chansh-am22@student.tarc.edu.my', '$2y$10$3Sm1lxjx6YodMxqCXW0riOY6Plen2z.pV.GXvYL.KH3a.3dmFPRMy', 'active', 'uploads/68d83a959bb49-Screenshot 2024-05-03 151943.png', 'Professional', NULL, NULL, NULL, NULL, NULL, NULL, '', '2025-09-27 17:21:42'),
+(2, 'xuan', 'chan123@GMAIL.COM', '$2y$10$UqWAFCaxniqS5NKJDYgndOWtGvfVlv3rwWfdJVo.f0mbUMkYPmY16', 'active', 'uploads/default.png', 'Student', NULL, NULL, NULL, NULL, NULL, NULL, '', '2025-09-28 06:08:01'),
+(3, 'xuan', 'abc@gmail.com', '$2y$10$WbU7EDXaKg0EcfW.B.spWOqvSqrLro1z9NCpw9DW.Z8xMhe04PRMm', 'active', 'uploads/default.png', 'Student', NULL, NULL, NULL, NULL, NULL, NULL, '', '2025-11-11 14:17:17'),
+(4, 'GYZ', 'GYZ@gmail.com', '$2y$10$b2eGc843Cu2g7Q0AyP4w1ulwZTmgomHrPv4QpFC9XtHSOAhlCOrqa', 'active', 'uploads/6920af2dc9395-donk.jpg', 'Professional', 'GWK', 'Tingkat Lahat Mines 4', 'Lahat', 'Perak', '31500', 'Malaysia', '+60165076821', '2025-11-21 18:27:28'),
+(6, 'cck', 'chock-am22@student.tarc.edu.my', '$2y$10$VzgL/FZDSCQeqhGiGgtxae3fX9.z/4QLAIlDDDmk.GhqSNczOI0tm', 'active', 'uploads/693645450d731-donk.jpg', 'Gamer', '', '', '', '', '', '', '', '2025-12-02 07:00:41');
 
 -- --------------------------------------------------------
 
@@ -1703,6 +1757,13 @@ ALTER TABLE `recommendation_ratings`
   ADD UNIQUE KEY `user_product_rating` (`user_id`,`product_id`);
 
 --
+-- Indexes for table `review_media`
+--
+ALTER TABLE `review_media`
+  ADD PRIMARY KEY (`media_id`),
+  ADD KEY `idx_review_id` (`review_id`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -1782,13 +1843,13 @@ ALTER TABLE `weightage_history`
 -- AUTO_INCREMENT for table `admin_activity_log`
 --
 ALTER TABLE `admin_activity_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
 --
 ALTER TABLE `admin_users`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `ai_performance_metrics`
@@ -1824,7 +1885,7 @@ ALTER TABLE `chat_history`
 -- AUTO_INCREMENT for table `conversations`
 --
 ALTER TABLE `conversations`
-  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `conversation_messages`
@@ -1836,7 +1897,7 @@ ALTER TABLE `conversation_messages`
 -- AUTO_INCREMENT for table `coupons`
 --
 ALTER TABLE `coupons`
-  MODIFY `coupon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `coupon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `intents`
@@ -1860,13 +1921,13 @@ ALTER TABLE `inventory_logs`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `password_reset_tokens`
@@ -1884,13 +1945,13 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `personas`
 --
 ALTER TABLE `personas`
-  MODIFY `persona_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `persona_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=179;
 
 --
 -- AUTO_INCREMENT for table `product_media`
@@ -1902,7 +1963,7 @@ ALTER TABLE `product_media`
 -- AUTO_INCREMENT for table `product_reviews`
 --
 ALTER TABLE `product_reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `recommendation_logs`
@@ -1914,13 +1975,19 @@ ALTER TABLE `recommendation_logs`
 -- AUTO_INCREMENT for table `recommendation_ratings`
 --
 ALTER TABLE `recommendation_ratings`
-  MODIFY `rating_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `rating_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `review_media`
+--
+ALTER TABLE `review_media`
+  MODIFY `media_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `role_permissions`
@@ -2047,6 +2114,12 @@ ALTER TABLE `product_reviews`
 --
 ALTER TABLE `recommendation_logs`
   ADD CONSTRAINT `recommendation_logs_ibfk_1` FOREIGN KEY (`persona_id`) REFERENCES `personas` (`persona_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `review_media`
+--
+ALTER TABLE `review_media`
+  ADD CONSTRAINT `fk_media_review` FOREIGN KEY (`review_id`) REFERENCES `product_reviews` (`review_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `role_permissions`
