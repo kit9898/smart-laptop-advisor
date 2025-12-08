@@ -29,10 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verify the password against the stored hash
             if (password_verify($password, $user['password_hash'])) {
                 // Password is correct. Store the correct session variables.
-                
-                // --- CRITICAL FIXES ARE HERE ---
                 $_SESSION["user_id"] = $user['user_id'];
-                $_SESSION["full_name"] = $user['full_name']; // Use "full_name" to match the rest of the site
+                $_SESSION["full_name"] = $user['full_name'];
                 
                 // Redirect user to their profile page upon successful login
                 header("location: profile.php");

@@ -5,6 +5,7 @@
         </div>
     </footer>
 
+<?php if (isset($_SESSION['user_id'])): ?>
 <!-- ===== ASUS-STYLE CHATBOT HTML (Enhanced with Product Cards & Persistence) ===== -->
 <div id="chat-widget" class="chat-widget">
     <div class="chat-header">
@@ -695,6 +696,7 @@ window.addEventListener('beforeunload', () => {
     localStorage.setItem('chat_was_open', chatWidget.classList.contains('open') ? 'true' : 'false');
 });
 </script>
+<?php endif; ?>
 </body>
 </html>
 <?php

@@ -872,7 +872,131 @@ $max_intent_usage = !empty($top_intents) ? max(array_column($top_intents, 'usage
 
     <?php include 'includes/admin_footer.php'; ?>
 
+    <!-- ===== INTENT TRAINING MODAL (Pro-Level UI) ===== -->
+    <div class="modal fade" id="trainQueryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none;">
+                <!-- Modal Header with Gradient -->
+                <div class="modal-header border-0" style="background: var(--asus-gradient); padding: 24px 30px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-mortarboard-fill text-white fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title text-white mb-0 fw-bold">Train AI Assistant</h5>
+                            <small class="text-white-50">Add this query to improve responses</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body p-4">
+                    <!-- Query Display Card -->
+                    <div class="query-display-card mb-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 16px; padding: 20px; border-left: 4px solid var(--asus-primary);">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background: var(--asus-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-chat-quote text-white"></i>
+                            </div>
+                            <div>
+                                <label class="text-muted small fw-semibold text-uppercase mb-1">Unrecognized Query</label>
+                                <p id="trainQueryText" class="mb-0 fs-5 fw-semibold" style="color: var(--asus-dark);"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Training Mode Tabs -->
+                    <ul class="nav nav-pills nav-fill gap-2 mb-4" id="trainingModeTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active d-flex align-items-center justify-content-center gap-2" id="existing-tab" data-bs-toggle="pill" data-bs-target="#existing-intent" type="button" role="tab" style="border-radius: 12px; padding: 14px 20px;">
+                                <i class="bi bi-folder-plus"></i>
+                                <span>Add to Existing Intent</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center justify-content-center gap-2" id="new-tab" data-bs-toggle="pill" data-bs-target="#new-intent" type="button" role="tab" style="border-radius: 12px; padding: 14px 20px;">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Create New Intent</span>
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="trainingModeContent">
+                        <!-- Existing Intent Tab -->
+                        <div class="tab-pane fade show active" id="existing-intent" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Select Intent</label>
+                                <select id="intentSelect" class="form-select form-select-lg" style="border-radius: 12px; border: 2px solid #e2e8f0; padding: 12px 16px;">
+                                    <option value="">Loading intents...</option>
+                                </select>
+                            </div>
+                            <div id="intentPreview" class="intent-preview-card" style="display: none; background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0;">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="bi bi-info-circle text-primary"></i>
+                                    <span class="fw-semibold">Intent Info</span>
+                                </div>
+                                <p id="intentDescription" class="text-muted small mb-1"></p>
+                                <div class="d-flex gap-3">
+                                    <span class="badge bg-primary-subtle text-primary" id="intentUsageCount">0 uses</span>
+                                    <span class="badge bg-success-subtle text-success" id="intentPhraseCount">0 phrases</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- New Intent Tab -->
+                        <div class="tab-pane fade" id="new-intent" role="tabpanel">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Intent Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="newIntentName" class="form-control" placeholder="e.g. ask_laptop_specs" style="border-radius: 10px; border: 2px solid #e2e8f0; padding: 10px 14px;">
+                                    <small class="text-muted">Use snake_case (e.g., ask_about_price)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Display Name</label>
+                                    <input type="text" id="newDisplayName" class="form-control" placeholder="e.g. Ask Laptop Specs" style="border-radius: 10px; border: 2px solid #e2e8f0; padding: 10px 14px;">
+                                    <small class="text-muted">Human-readable name (auto-generated if empty)</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Description</label>
+                                    <textarea id="newIntentDescription" class="form-control" rows="2" placeholder="What this intent handles..." style="border-radius: 10px; border: 2px solid #e2e8f0; padding: 10px 14px;"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Default Bot Response</label>
+                                    <textarea id="newDefaultResponse" class="form-control" rows="2" placeholder="The chatbot's response when this intent is detected..." style="border-radius: 10px; border: 2px solid #e2e8f0; padding: 10px 14px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                    <button type="button" class="btn btn-primary px-4 d-flex align-items-center gap-2" id="trainSubmitBtn" onclick="submitTraining()" style="border-radius: 10px; background: var(--asus-gradient); border: none;">
+                        <i class="bi bi-check2-circle"></i>
+                        <span>Train AI</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="trainSuccessToast" class="toast align-items-center border-0" role="alert" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 14px;">
+            <div class="d-flex">
+                <div class="toast-body text-white d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <span id="toastMessage">Training phrase added successfully!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
     <script>
     // Chart.js Global Defaults
     Chart.defaults.font.family = 'Nunito, sans-serif';
@@ -988,13 +1112,219 @@ $max_intent_usage = !empty($top_intents) ? max(array_column($top_intents, 'usage
         }
     });
     
-    function trainQuery(query) {
-        alert('Training feature coming soon!\nQuery: ' + query);
-    }
-    
     function exportUnrecognized() {
         window.location.href = 'ajax/export_unrecognized_queries.php';
     }
+    
+    // ============================================
+    // INTENT TRAINING SYSTEM (Pro-Level)
+    // ============================================
+    
+    let currentTrainingQuery = '';
+    let intentsData = [];
+    const trainModal = new bootstrap.Modal(document.getElementById('trainQueryModal'));
+    const successToast = new bootstrap.Toast(document.getElementById('trainSuccessToast'));
+    
+    // Open Training Modal
+    function trainQuery(query) {
+        currentTrainingQuery = query;
+        document.getElementById('trainQueryText').textContent = query;
+        
+        // Reset form
+        document.getElementById('intentSelect').value = '';
+        document.getElementById('intentPreview').style.display = 'none';
+        document.getElementById('newIntentName').value = '';
+        document.getElementById('newDisplayName').value = '';
+        document.getElementById('newIntentDescription').value = '';
+        document.getElementById('newDefaultResponse').value = '';
+        
+        // Switch to first tab
+        document.getElementById('existing-tab').click();
+        
+        // Load intents
+        loadIntents();
+        
+        // Show modal
+        trainModal.show();
+    }
+    
+    // Load Intents for Dropdown
+    async function loadIntents() {
+        const select = document.getElementById('intentSelect');
+        select.innerHTML = '<option value="">Loading intents...</option>';
+        
+        try {
+            const response = await fetch('ajax/train_query.php?action=get_intents');
+            const data = await response.json();
+            
+            if (data.success && data.intents.length > 0) {
+                intentsData = data.intents;
+                select.innerHTML = '<option value="">-- Select an Intent --</option>';
+                
+                data.intents.forEach(intent => {
+                    const option = document.createElement('option');
+                    option.value = intent.intent_id;
+                    option.textContent = intent.display_name || intent.intent_name;
+                    option.dataset.description = intent.description || 'No description';
+                    option.dataset.usageCount = intent.usage_count || 0;
+                    select.appendChild(option);
+                });
+            } else {
+                select.innerHTML = '<option value="">No intents available - Create a new one</option>';
+            }
+        } catch (error) {
+            console.error('Error loading intents:', error);
+            select.innerHTML = '<option value="">Error loading intents</option>';
+        }
+    }
+    
+    // Intent Selection Change Handler
+    document.getElementById('intentSelect').addEventListener('change', async function() {
+        const intentId = this.value;
+        const preview = document.getElementById('intentPreview');
+        
+        if (!intentId) {
+            preview.style.display = 'none';
+            return;
+        }
+        
+        const selectedOption = this.options[this.selectedIndex];
+        const description = selectedOption.dataset.description;
+        const usageCount = selectedOption.dataset.usageCount;
+        
+        document.getElementById('intentDescription').textContent = description;
+        document.getElementById('intentUsageCount').textContent = usageCount + ' uses';
+        
+        // Get phrase count
+        try {
+            const response = await fetch(`ajax/train_query.php?action=get_phrase_count&intent_id=${intentId}`);
+            const data = await response.json();
+            document.getElementById('intentPhraseCount').textContent = (data.count || 0) + ' phrases';
+        } catch (e) {
+            document.getElementById('intentPhraseCount').textContent = '? phrases';
+        }
+        
+        preview.style.display = 'block';
+    });
+    
+    // Submit Training
+    async function submitTraining() {
+        const btn = document.getElementById('trainSubmitBtn');
+        const originalContent = btn.innerHTML;
+        
+        // Check which tab is active
+        const isNewIntent = document.getElementById('new-intent').classList.contains('active');
+        
+        let formData = new FormData();
+        formData.append('phrase', currentTrainingQuery);
+        
+        if (isNewIntent) {
+            // Create new intent
+            const intentName = document.getElementById('newIntentName').value.trim();
+            
+            if (!intentName) {
+                showError('Please enter an intent name');
+                return;
+            }
+            
+            formData.append('action', 'create_intent');
+            formData.append('intent_name', intentName);
+            formData.append('display_name', document.getElementById('newDisplayName').value.trim());
+            formData.append('description', document.getElementById('newIntentDescription').value.trim());
+            formData.append('default_response', document.getElementById('newDefaultResponse').value.trim());
+        } else {
+            // Add to existing intent
+            const intentId = document.getElementById('intentSelect').value;
+            
+            if (!intentId) {
+                showError('Please select an intent');
+                return;
+            }
+            
+            formData.append('action', 'add_phrase');
+            formData.append('intent_id', intentId);
+        }
+        
+        // Show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Training...';
+        
+        try {
+            const response = await fetch('ajax/train_query.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Close modal
+                trainModal.hide();
+                
+                // Show success toast
+                document.getElementById('toastMessage').textContent = data.message;
+                successToast.show();
+                
+                // Remove the trained query from the list (visual feedback)
+                removeTrainedQuery(currentTrainingQuery);
+                
+            } else {
+                showError(data.error || 'Training failed');
+            }
+        } catch (error) {
+            console.error('Training error:', error);
+            showError('Network error. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+        }
+    }
+    
+    // Remove trained query from UI
+    function removeTrainedQuery(query) {
+        const queryItems = document.querySelectorAll('.query-item');
+        queryItems.forEach(item => {
+            const text = item.querySelector('.query-text');
+            if (text && text.textContent.trim() === query.trim()) {
+                item.style.transition = 'all 0.3s ease';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    item.innerHTML = `
+                        <div class="d-flex align-items-center gap-2 text-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Trained successfully!</span>
+                        </div>
+                    `;
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                    item.style.background = 'rgba(16, 185, 129, 0.1)';
+                }, 300);
+            }
+        });
+    }
+    
+    // Show Error Alert
+    function showError(message) {
+        // Create error toast
+        const errorHtml = `
+            <div class="alert alert-danger alert-dismissible fade show position-fixed" 
+                 style="bottom: 20px; right: 20px; z-index: 9999; border-radius: 12px; min-width: 300px;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', errorHtml);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-danger');
+            if (alert) alert.remove();
+        }, 5000);
+    }
+    
     </script>
 </body>
 </html>
+

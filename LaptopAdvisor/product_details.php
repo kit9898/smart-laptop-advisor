@@ -1244,11 +1244,70 @@ function openReviewLightbox(url, type) {
     let element;
     if (type === 'video') {
         element = document.createElement('video');
+        element.src = url;
+        element.controls = true;
+        element.autoplay = true;
+        element.style.maxWidth = "80vw";
+        element.style.maxHeight = "90vh";
+    } else {
+        element = document.createElement('img');
+        element.src = url;
+        element.style.maxWidth = "80vw";
+        element.style.maxHeight = "90vh";
+        element.style.objectFit = "contain";
+    }
+    
+    wrapper.appendChild(element);
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+</script>
+
+<!-- Compare Bar -->
+<div id="compareBar" class="compare-bar">
+    <span id="compareCount">0 Selected</span>
+    <button class="btn btn-outline" onclick="clearCompare()" style="margin-top: 0; padding: 8px 15px;">
         Clear
     </button>
     <button class="btn btn-primary" onclick="goToCompare()" id="compareNowBtn" style="margin-top: 0; padding: 8px 20px;">
         Compare Now
     </button>
 </div>
+
+<style>
+.compare-bar {
+    position: fixed;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: bottom 0.3s ease;
+    z-index: 999;
+}
+.compare-bar.show {
+    bottom: 20px;
+}
+.compare-bar .btn {
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+.compare-bar .btn-outline {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+}
+.compare-bar .btn-primary {
+    background: white;
+    color: #667eea;
+    border: none;
+}
+</style>
 
 <?php include 'includes/footer.php'; ?>
