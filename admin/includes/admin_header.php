@@ -20,31 +20,34 @@ $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
 // ==================== RBAC: Define menu item permissions ====================
 // Each menu item maps to a permission code that controls visibility
 $menu_permissions = [
-    // E-commerce menu items
+    // Product Module
     'admin_products.php' => 'product.view',
-    'admin_orders.php' => 'order.view',
     'admin_inventory.php' => 'inventory.manage',
-    'admin_transactions.php' => 'transaction.manage',
-    'admin_coupons.php' => 'product.edit',
-    'admin_reviews.php' => 'product.view',
+    'admin_reviews.php' => 'review.manage',
+    'admin_coupons.php' => 'coupon.manage',
     
-    // AI menu items
+    // Order Module
+    'admin_orders.php' => 'order.view',
+    'admin_transactions.php' => 'transaction.manage',
+    
+    // AI Module
     'admin_personas.php' => 'persona.manage',
     'admin_recommendation_logs.php' => 'ai.logs',
     'admin_ai_performance.php' => 'ai.performance',
     
-    // Chatbot menu items
+    // Chatbot Module
     'admin_conversation_logs.php' => 'chatbot.conversations',
     'admin_chatbot_analytics.php' => 'chatbot.analytics',
     
-    // Admin menu items
+    // User Module
     'admin_customers.php' => 'customer.view',
     'admin_admins.php' => 'admin.view',
     'admin_roles.php' => 'role.manage',
     
-    // Additional tools
-    'admin_reports.php' => 'reports.view',
+    // System Module
     'admin_logs.php' => 'logs.view',
+    'admin_settings.php' => 'settings.view',
+    'admin_reports.php' => 'reports.view',
 ];
 
 /**
