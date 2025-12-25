@@ -16,6 +16,77 @@ $admin_pages = ['admin_customers.php', 'admin_admins.php', 'admin_roles.php'];
 
 // Check for dark mode
 $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
+
+// ==================== RBAC: Define menu item permissions ====================
+// Each menu item maps to a permission code that controls visibility
+$menu_permissions = [
+    // E-commerce menu items
+    'admin_products.php' => 'product.view',
+    'admin_orders.php' => 'order.view',
+    'admin_inventory.php' => 'inventory.manage',
+    'admin_transactions.php' => 'transaction.manage',
+    'admin_coupons.php' => 'product.edit',
+    'admin_reviews.php' => 'product.view',
+    
+    // AI menu items
+    'admin_personas.php' => 'persona.manage',
+    'admin_recommendation_logs.php' => 'ai.logs',
+    'admin_ai_performance.php' => 'ai.performance',
+    
+    // Chatbot menu items
+    'admin_conversation_logs.php' => 'chatbot.conversations',
+    'admin_chatbot_analytics.php' => 'chatbot.analytics',
+    
+    // Admin menu items
+    'admin_customers.php' => 'customer.view',
+    'admin_admins.php' => 'admin.view',
+    'admin_roles.php' => 'role.manage',
+    
+    // Additional tools
+    'admin_reports.php' => 'reports.view',
+    'admin_logs.php' => 'logs.view',
+];
+
+/**
+ * Check if menu item should be visible based on permissions
+ * @param string $page Page filename
+ * @return bool
+ */
+function canAccessMenuItem($page) {
+    global $menu_permissions;
+    
+    // Super admin sees everything
+    if (isset($_SESSION['is_super_admin']) && $_SESSION['is_super_admin'] === true) {
+        return true;
+    }
+    
+    // If no permission defined, show by default
+    if (!isset($menu_permissions[$page])) {
+        return true;
+    }
+    
+    $required_permission = $menu_permissions[$page];
+    $permissions = $_SESSION['admin_permissions'] ?? [];
+    
+    return isset($permissions[$required_permission]);
+}
+
+/**
+ * Check if any item in a menu group should be visible
+ * @param array $pages Array of page filenames
+ * @return bool
+ */
+function canAccessMenuGroup($pages) {
+    foreach ($pages as $page) {
+        if (canAccessMenuItem($page)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Get current admin role name for display
+$admin_role_display = $_SESSION['admin_role_name'] ?? 'Admin';
 ?>
 <!-- Dark Mode Support -->
 <link rel="stylesheet" href="source/assets/css/dark.css">
@@ -39,7 +110,13 @@ $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
                         </div>
                     </div>
                 </div>
-                <div class="mt-3 px-4 mb-2">
+                <!-- Role Badge Display -->
+                <div class="mt-2 px-4 mb-2">
+                    <span class="badge bg-primary w-100 py-2" style="font-size: 0.85rem;">
+                        <i class="bi bi-shield-check me-1"></i><?php echo htmlspecialchars($admin_role_display); ?>
+                    </span>
+                </div>
+                <div class="mt-2 px-4 mb-2">
                     <div class="input-group input-group-sm currency-wrapper">
                         <span class="input-group-text bg-transparent border-0"><i class="bi bi-cash-coin"></i></span>
                         <select class="form-select form-select-sm currency-selector" style="cursor: pointer;">
@@ -100,7 +177,7 @@ $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
 
-                        <!-- Dashboard (Analytics & Reporting) -->
+                        <!-- Dashboard (Analytics & Reporting) - Always visible -->
                         <li class="sidebar-item <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>">
                             <a href="admin_dashboard.php" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
@@ -108,103 +185,146 @@ $theme = isset($_COOKIE['admin_theme']) ? $_COOKIE['admin_theme'] : 'light';
                             </a>
                         </li>
 
-                        <!-- E-commerce & Operations -->
+                        <!-- E-commerce & Operations - RBAC Filtered -->
+                        <?php if (canAccessMenuGroup($ecommerce_pages)): ?>
                         <li class="sidebar-item has-sub <?php echo isModulePage($ecommerce_pages) ? 'active' : ''; ?>">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-shop"></i>
                                 <span>E-commerce & Operations</span>
                             </a>
                             <ul class="submenu <?php echo isModulePage($ecommerce_pages) ? 'active' : ''; ?>">
+                                <?php if (canAccessMenuItem('admin_products.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_products.php') ? 'active' : ''; ?>">
                                     <a href="admin_products.php">Product Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_orders.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_orders.php') ? 'active' : ''; ?>">
                                     <a href="admin_orders.php">Order Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_inventory.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_inventory.php') ? 'active' : ''; ?>">
                                     <a href="admin_inventory.php">Inventory Control</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_transactions.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_transactions.php') ? 'active' : ''; ?>">
                                     <a href="admin_transactions.php">Transactions</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_coupons.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_coupons.php') ? 'active' : ''; ?>">
                                     <a href="admin_coupons.php">Coupon Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_reviews.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_reviews.php') ? 'active' : ''; ?>">
                                     <a href="admin_reviews.php">Review Management</a>
                                 </li>
+                                <?php endif; ?>
                             </ul>
                         </li>
+                        <?php endif; ?>
 
-                        <!-- AI Recommendation Engine -->
+                        <!-- AI Recommendation Engine - RBAC Filtered -->
+                        <?php if (canAccessMenuGroup($ai_pages)): ?>
                         <li class="sidebar-item has-sub <?php echo isModulePage($ai_pages) ? 'active' : ''; ?>">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-cpu"></i>
                                 <span>AI Recommendation Engine</span>
                             </a>
                             <ul class="submenu <?php echo isModulePage($ai_pages) ? 'active' : ''; ?>">
+                                <?php if (canAccessMenuItem('admin_personas.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_personas.php') ? 'active' : ''; ?>">
                                     <a href="admin_personas.php">Persona Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_recommendation_logs.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_recommendation_logs.php') ? 'active' : ''; ?>">
                                     <a href="admin_recommendation_logs.php">Recommendation Logs</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_ai_performance.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_ai_performance.php') ? 'active' : ''; ?>">
                                     <a href="admin_ai_performance.php">Performance Analytics</a>
                                 </li>
+                                <?php endif; ?>
                             </ul>
                         </li>
+                        <?php endif; ?>
 
-                        <!-- Chatbot Management -->
+                        <!-- Chatbot Management - RBAC Filtered -->
+                        <?php if (canAccessMenuGroup($chatbot_pages)): ?>
                         <li class="sidebar-item has-sub <?php echo isModulePage($chatbot_pages) ? 'active' : ''; ?>">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-chat-dots"></i>
                                 <span>Chatbot Management</span>
                             </a>
                             <ul class="submenu <?php echo isModulePage($chatbot_pages) ? 'active' : ''; ?>">
+                                <?php if (canAccessMenuItem('admin_conversation_logs.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_conversation_logs.php') ? 'active' : ''; ?>">
                                     <a href="admin_conversation_logs.php">Conversation Logs</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_chatbot_analytics.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_chatbot_analytics.php') ? 'active' : ''; ?>">
                                     <a href="admin_chatbot_analytics.php">Chatbot Analytics</a>
                                 </li>
+                                <?php endif; ?>
                             </ul>
                         </li>
+                        <?php endif; ?>
 
-                        <!-- User & System Administration -->
+                        <!-- User & System Administration - RBAC Filtered -->
+                        <?php if (canAccessMenuGroup($admin_pages)): ?>
                         <li class="sidebar-item has-sub <?php echo isModulePage($admin_pages) ? 'active' : ''; ?>">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-people"></i>
                                 <span>User & System Admin</span>
                             </a>
                             <ul class="submenu <?php echo isModulePage($admin_pages) ? 'active' : ''; ?>">
+                                <?php if (canAccessMenuItem('admin_customers.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_customers.php') ? 'active' : ''; ?>">
                                     <a href="admin_customers.php">Customer Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_admins.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_admins.php') ? 'active' : ''; ?>">
                                     <a href="admin_admins.php">Administrator Management</a>
                                 </li>
+                                <?php endif; ?>
+                                <?php if (canAccessMenuItem('admin_roles.php')): ?>
                                 <li class="submenu-item <?php echo ($current_page == 'admin_roles.php') ? 'active' : ''; ?>">
                                     <a href="admin_roles.php">Role Management</a>
                                 </li>
+                                <?php endif; ?>
                             </ul>
                         </li>
+                        <?php endif; ?>
 
+                        <!-- Additional Tools - RBAC Filtered -->
+                        <?php if (canAccessMenuItem('admin_reports.php') || canAccessMenuItem('admin_logs.php')): ?>
                         <li class="sidebar-title">Additional Tools</li>
 
+                        <?php if (canAccessMenuItem('admin_reports.php')): ?>
                         <li class="sidebar-item <?php echo ($current_page == 'admin_reports.php') ? 'active' : ''; ?>">
                             <a href="admin_reports.php" class='sidebar-link'>
                                 <i class="bi bi-graph-up"></i>
                                 <span>Advanced Reports</span>
                             </a>
                         </li>
+                        <?php endif; ?>
 
+                        <?php if (canAccessMenuItem('admin_logs.php')): ?>
                         <li class="sidebar-item <?php echo ($current_page == 'admin_logs.php') ? 'active' : ''; ?>">
                             <a href="admin_logs.php" class='sidebar-link'>
                                 <i class="bi bi-journal-text"></i>
                                 <span>System Logs</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php endif; ?>
                     </ul>
                 </div>
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

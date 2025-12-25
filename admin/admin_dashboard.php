@@ -1,6 +1,17 @@
 <?php
 session_start();
 require_once 'includes/db_connect.php';
+require_once 'includes/functions.php';
+
+// Initialize admin page with RBAC (check_permission = false for dashboard - everyone can access)
+initAdminPage($conn, false);
+
+// Display access denied message if redirected
+$access_denied = '';
+if (isset($_SESSION['access_denied_message'])) {
+    $access_denied = $_SESSION['access_denied_message'];
+    unset($_SESSION['access_denied_message']);
+}
 
 // --- Logic: Fetch Statistics ---
 
@@ -120,6 +131,13 @@ $result_recent = $conn->query($sql_recent);
                     <i class="bi bi-justify fs-3"></i>
                 </a>
             </header>
+
+            <?php if (!empty($access_denied)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-shield-exclamation me-2"></i><strong>Access Denied:</strong> <?php echo htmlspecialchars($access_denied); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php endif; ?>
 
             <div class="page-heading">
                 <div class="d-flex justify-content-between align-items-center">

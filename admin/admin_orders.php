@@ -1,7 +1,10 @@
 <?php
 session_start();
 require_once 'includes/db_connect.php';
+require_once 'includes/functions.php';
 
+// Initialize admin page with RBAC - requires 'order.view' permission
+initAdminPage($conn);
 // Handle Status Update
 if (isset($_POST['update_status'])) {
     $order_id = $_POST['order_id'];

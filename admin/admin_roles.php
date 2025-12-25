@@ -8,12 +8,10 @@
 // Start session and include necessary files
 session_start();
 require_once 'includes/db_connect.php';
+require_once 'includes/functions.php';
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in'])) {
-    header('Location: login.php');
-    exit();
-}
+// Initialize admin page with RBAC - requires 'role.manage' permission
+initAdminPage($conn);
 
 // ==================== DATA FETCHING ====================
 

@@ -3,11 +3,8 @@ session_start();
 require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
-// Check authentication
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
-    exit();
-}
+// Initialize admin page with RBAC - requires 'product.view' permission
+initAdminPage($conn);
 
 // Handle Export CSV
 if (isset($_GET['action']) && $_GET['action'] == 'export_csv') {

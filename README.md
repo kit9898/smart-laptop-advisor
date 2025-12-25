@@ -33,8 +33,9 @@
 - **🤖 AI Configuration**: Fine-tune weighting algorithms and chatbot intent responses.
 
 ## Technology Stack
-- **Backend**: PHP, MySQL
-- **Frontend**: HTML5, CSS3, Bootstrap 5, Vanilla JavaScript, jQuery
+- **Backend**: PHP (Native), MySQL
+- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
+- **Database**: MySQL
 - **Libraries**:
     - **Chart.js / ApexCharts**: For interactive data visualization.
     - **jsPDF & html2canvas**: For client-side report generation.
